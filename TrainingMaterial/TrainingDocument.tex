@@ -1,0 +1,127 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{AuboTrainingmaterial}
+\author{Lead Robotics}
+\date{May 2022 v0.1.0}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{This document} 
+This document is constructed as training material. It is split into two basic sections. The fundamentals section is for basic usage and the advanced usage section is for the rest.
+
+Each section is about a specific feature of the Aubo robot and will have first a short informative section and then a task you can perform to try out the feature.
+
+If you need more information about the robot look at the manual. It can be found at the AUBO website: https://www.aubo-cobot.com/public/download3. Or at the Lead Robotics public repository: https://github.com/MalteNJLead/LeadPublic/tree/main.
+
+\section{Fundamentals}
+This  section is for fundamental use of the robot. Anybody who operates the robot is encouraged to study this section. 
+
+\subsection{Startup}
+
+In short: Plug everything in. Turn the large switch on the controlbox. Wait until the standby light starts. Then hold the power button on the teachpendant for around 2 seconds.  
+
+After startup the Aubo programming environment (AuboPE) will start automatically. Login with the default password: '1' and press save, and then startup on the popup. The manipulator arm should now power on, the brakes will click, and the AuboPE UI should appear.  
+
+Task: 
+Start the robot and login. 
+
+\subsection{Moving the Robot}
+You can move the robot in two ways. 
+You can press the black button on the right side of the teachpendant. The button is a three position switch, where the middle position will release the brakes and let you drag the robot around.
+
+The second method uses the teachpendant. Go to the leftmost menu 'RobotTeaching'. Here you can move the robot in various ways.
+
+Task1: Try both ways of moving the robot. 
+Task2: Try moving with regards to position and orientation. 
+Task3: Move joints directly
+Task4: Try moving in stepmode. 
+Task5: There is an area direcly above and below the base of the robot, that the flange cannot enter. Try moving the robot into this singularity. 
+  
+\subsection{UI Programming} 
+
+The programming menu in AuboPE lets you construct lua programs from the UI. In this menu you can save and load projects and edit them with new instructions. Instructions include basic proramming blocks like if statements and loops and also movement commands and threads. 
+When you have built and saved a program you can have the robot execute it by clicking start in the bottom left corner. For the project to start the robot needs to be moved to the first movement position in the program. To do this hold down the red Auto button. 
+
+task1: Create a project that moves the arm between two points in a loop and execute it. 
+
+\subsection{User I/O}
+
+\section{Advanced Use}
+\subsection{Programming in Lua}
+\subsection{User Coordinate Systems}
+\subsection{Security Features}
+\subsection{Modbus Communication}
+\subsection{Linkage Mode}
+\subsection{Tool I/O}
+\subsection{Sharing Internet}
+If there is no cable connection to supply the AUBO robot with internet you can connect it through a PC with a wifi connection. 
+
+For windows 10: 
+First step connect the ethernet cable.
+Next we have to define static matching IP's for both the robot and the PC. 
+On windows you go to 
+Then define a static ip for both robot and the pc's ethernet connection. 
+In windows that would be in controlcenter -> network and internet -> network and sharing center -> select the ethernet connection under active networks -> go to properties -> define a new static Adressing. fx. IP: 192.168.137.1, with subnetmask 255.255.255.0 and leave the standard gateway blank. For DNS you could use 8.8.8.8 with alternative 8.8.4.4. 
+
+On the robot changing the static IP is done with the file /etc/network/interfaces
+write out the ethernet specifications. An example could be. 
+#eth3
+auto eth3 
+iface eth3 inet static 
+address 192.168.137.2 #static Ip of robot
+gateway 192.168.137.1 # since we are routing internet through the PC we use its IP as the gateway. 
+netmask 255.0.0.0  
+#eth3 config finished
+
+make sure to save the changes and the perform a reboot for them to take affect. 
+Now you should have a connection between laptop and robot, which can be tested by pinging the opposition from either device. Fx in the robot terminal write \$ping 192.168.137.1.
+ 
+The last step is to allow sharing of internet in windows. Go again to controlcenter -> network and internet -> network and sharing center here select your active wifi connection (that gives you access to the internet). go to properties -> sharing and allow sharing over the ethernet connection (or whatever your cabled connection is called)
+
+Now you should be able to access the internet on the robot. Test it by visiting a webpage or pinging google at 8.8.8.8 or pinging something else.  mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm 
+
+\subsection{Remote Access}
+\subsection{Updating}
+\subsection{Virtual machine}
+\label{sec:virtual}
+
+1.	Install virtual machine environment
+Find and install a virtual machine. I use vmware: https://www.vmware.com/products/workstation-player/workstation-player-evaluation.html
+
+2.	Open Aubo Virtual machine
+The VM can be found on aubo’s homepage. But this is a direct link to the drive where they host it:  https://drive.google.com/drive/folders/1vxmE4JyKkqD4IaGncI1EtJIXRtCnlECY 
+Make sure you get the all the parts and unzip them. Now you should have a folder called “Aubo-ORPE_V4.0.x_Release”. This folder contains the virtual machine. 
+Open the virtual machine on your environment of choice. 
+On VMware you press open VM and navigate to “Aubo-ORPE_V4.0.x_Release/ aubo.vmx”. Then the machine will be listed under the name aubo. Right click on the name to access the settings in order to change the name and maybe adjust the allocated RAM for the VM. Then click ok and press “play virtual machine”.  A popup will appear, mark of that you copied the VM. And then Ubuntu should start. 
+
+3.	Update Aubo virtual machine
+Update Aubo to the newest version. See https://drive.google.com/drive/folders/1e2sAyCd5S1s4jH7FRyMwZzTy7VTZb2NE for details. 
+Remember the default password is: 1 
+Also if the resolution is small, moving the virtual machine window about seems to fix it (on vmware). 
+Also you might want to change the keyboard layout. 
+To move files into VMWare you can use an external harddrive or you can setup a shared folder between host and VM.
+
+\subsection{Plugin Design}
+
+The recommended way to build plugins is to do it within the virtual machine. See section \ref{sec:virtual}. 
+After opening the VM locate project and build it.
+Now the desktop toolbar disappears in the new update but you can get it back by typing this command in the terminal: 
+\$ unity\& 
+Now go to the top left corner and search for QTcreator community edition. 
+When you open QT the plugin example should be in the recent project list. Otherwise the path is: /root/Workspace/PluginTest/ORPE_Extention_SDK.pro
+Open the project and build it. 
+This creates the plugin file(s) (with  the .so file ending) under: /root/Workspace/build-ORPE_Extention_SDK-qt5_5_1-Debug/*
+
+Using the plugins.
+Moving these .so plugin files into the robot filesystem under: /root/AuboRobotWorkSpace/teachpendant/lib/teachpendant/
+And performing a reboot of the robot or virtual machine should have your new tabs show up within AuboPE. The example creates a tab under extensions -> peripherals -> Robotiq2F.
+
+
+\subsection{Palletizing Software}
+
+\end{document}
