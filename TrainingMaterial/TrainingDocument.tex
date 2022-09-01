@@ -55,6 +55,14 @@ task1: Create a project that moves the arm between two points in a loop and exec
 \subsection{Programming in Lua}
 \subsection{User Coordinate Systems}
 \subsection{Security Features}
+
+\subsubsection{Emergency stop}
+Emergency stop is on SI00 og SI10. Anything other than a continuous high signal on these inputs and the robot will enter emergency stop. 
+
+S00 and S10 will output a high signal if the robot is in an emergency state, but will be nominally low. 
+
+
+
 \subsection{Modbus Communication}
 \subsection{Linkage Mode}
 \subsection{Tool I/O}
