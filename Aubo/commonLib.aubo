@@ -1,0 +1,515 @@
+--[[
+    Common functions to use while writing scripts for the AUBO robot.
+    Created by Lead Robotics - MNJ
+]]
+
+------------------------------------  Section 1 - Assorted  ----------------------------------------------
+
+gIsMoving = false
+
+function fileExists(file)
+    local f = io.open(file, "rb")
+    if f then f:close() end
+    return f ~= nil
+end
+
+function moveJoint(joint, block, speed)
+    setSpeed(speed)
+    move_joint(joint, block)
+end
+
+function moveLine(joint, block, speed)
+    setSpeed(speed)
+    move_line(joint, block)
+end
+
+function move(joint, type, speed, block)
+    setSpeed(speed)
+    gIsMoving = true
+    if type == "joint" then
+        moveJoint(joint, block, speed)
+    elseif type == "line" then
+        moveLine(joint, block, speed)
+    else
+        popup_message(0, "Error. Unknown move parameter", false)
+    end
+    gIsMoving = false
+end
+
+gSpeedSettings = {}
+gSpeedSettings["slow"] = {{0.5, 0.5, 0.5, 0.5, 0.5 ,0.5}, {0.1, 0.1, 0.1, 0.2, 0.2, 0.2}, 0.4, 0.08}
+gSpeedSettings["medium"] = {{1, 1, 1, 1, 1 ,1}, {0.5, 0.5, 0.5, 0.8, 0.8, 0.8}, 2, 0.4}
+gSpeedSettings["fast"] = {{4, 4, 4, 4, 4 ,4}, {2, 2, 2, 3, 3, 3}, 6, 1}
+
+function setSpeed(setting)
+    local speed = gSpeedSettings[setting]
+    set_joint_maxacc(speed[1])   -- joint 1,2,3,4,5,6. Acceleration is given in rad/s^2.
+    set_joint_maxvelc(speed[2]) -- joint 1,2,3,4,5,6. In rad/s. Maximum is 1 rad/s (joint3 is 0.83 rad/s)
+    set_end_maxacc(speed[3]) -- in m/s^2
+    set_end_maxvelc(speed[4])
+end
+
+function dot(point1, point2)
+    return point1[1] * point2[1] + point1[2] * point2[2]
+end
+
+function euclideanDistance(table1, table2)
+    local d = 0
+    for i=1, tablelength(table1) do
+        d = d + (table2[i] - table1[i])^2
+    end
+    return math.sqrt(d)
+end
+
+function checkPose(pose, dist) --returns true if the robots current pose is close to the given pose parameter.
+    local currentPose = get_current_waypoint().joint
+    dist = dist or 0.1
+	currentPose = {currentPose["j1"], currentPose["j2"], currentPose["j3"], currentPose["j4"], currentPose["j5"], currentPose["j6"],}
+	if euclideanDistance(currentPose, pose) >= dist then
+        return false
+    else
+        return true
+	end
+end
+
+function waypointCompare(a,b)
+    return a[1] < b[1]
+end
+
+-- Section 2 - Table Manipulation
+function replace_char(pos, str, r)
+    return str:sub(1, pos-1) .. r .. str:sub(pos+1)
+end
+
+function tablelength(T)
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
+end
+
+function PrintTable(table , level)
+    local key = ""
+    if (#table == 0) then
+        return
+    end
+    level = level or 1
+    local indent = ""
+    for i = 1, level do
+        indent = indent.." "
+    end
+    if key ~= "" then 
+        print(indent..key.." ".."=".." ".."{")
+    else
+        print(indent .. "{")
+    end
+    key = ""
+    for k,v in pairs(table) do
+        if type(v) == "table" then
+            key = k 
+            PrintTable(v, level + 1)
+        else
+            local content = string.format("%s%s = %s", indent .. " ",tostring(k), tostring(v))
+            print(content)
+        end
+    end
+    print(indent .. "}")
+end
+
+function deepCopy(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[deepCopy(orig_key)] = deepCopy(orig_value)
+        end
+        setmetatable(copy, deepCopy(getmetatable(orig)))
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end
+
+function Set (list)
+    local set = {}
+    for _, l in ipairs(list) do set[l] = true end
+    return set
+ end
+
+-----------------------------  Section 2 - Binary number manipulation  --------------------------------------
+
+function getBit(n, pos) -- get bit of decimal number n, at position pos. 0 index'ed.
+    local str = Dec2Bin(n, 16)
+    return tonumber(string.sub(str, -(1 + pos), -(1 + pos)))
+end
+
+
+function setBit(pos, n, r)-- returns decimal number, n, with bit at position pos set to value r. 0 index'ed.
+    r = tostring(r)
+    if not (r == "0" or r == "1") then
+        print("Error. Unable to set Bit")
+        return n
+    end
+    local currentBit = tostring(getBit(n, pos))
+    if (currentBit == "0") and (r == "1") then
+        return n + 2^pos
+    elseif (currentBit == "1") and (r == "0") then
+        return n - 2^pos
+    else
+        return n
+    end
+end
+
+
+function Bin2Dec(s) -- binary string
+    local num = 0
+    local ex = string.len(s) - 1
+    local l = 0
+    l = ex + 1
+    for i = 1, l do
+        b = string.sub(s, i, i)
+        if b == "1" then
+            num = num + 2^ex
+        end
+        ex = ex - 1
+    end
+    return string.format("%u", num)
+end
+
+function Hex2Bin(s) -- s	-> hexadecimal string
+    local hex2bin = {
+        ["0"] = "0000",
+        ["1"] = "0001",
+        ["2"] = "0010",
+        ["3"] = "0011",
+        ["4"] = "0100",
+        ["5"] = "0101",
+        ["6"] = "0110",
+        ["7"] = "0111",
+        ["8"] = "1000",
+        ["9"] = "1001",
+        ["a"] = "1010",
+        ["b"] = "1011",
+        ["c"] = "1100",
+        ["d"] = "1101",
+        ["e"] = "1110",
+        ["f"] = "1111"
+        }
+    string.gfind = string.gfind or string.gmatch
+    local ret = ""
+    local i = 0
+    for i in string.gfind(s, ".") do
+        i = string.lower(i)
+        ret = ret..hex2bin[i]
+    end
+    return ret
+end
+
+function Bin2Hex(s)
+    -- s 	-> binary string
+    local l = 0
+    local h = ""
+    local b = ""
+    local rem
+    l = string.len(s)
+    rem = l % 4
+    l = l-1
+    h = ""
+    -- need to prepend zeros to eliminate mod 4
+    if (rem > 0) then
+        s = string.rep("0", 4 - rem)..s
+    end
+    for i = 1, l, 4 do
+        b = string.sub(s, i, i+3)
+        h = h..bin2hex[b]
+    end
+    return h
+end
+
+function Dec2Bin(s, num) -- Base10 string -- num  -> string length to extend to
+    local n
+    if (num == nil) then
+        n = 0
+    else
+        n = num
+    end
+    s = string.format("%x", s)
+    s = Hex2Bin(s)
+    while string.len(s) < n do
+        s = "0"..s
+    end
+    return s
+end
+
+------------------------------------- Section 3 - 2DWaypoint logic ------------------------
+
+
+function addIntermediaryPoints(waypoint1, waypoint2, resolution)
+    local xDiff = waypoint2[1] - waypoint1[1]
+    local yDiff = waypoint2[2] - waypoint1[2]
+    local zDiff = euclideanDistance(waypoint1, waypoint2)
+    local nrOfSegments = math.ceil(zDiff/resolution)
+    local xIncrement = xDiff/nrOfSegments
+    local slope = yDiff / xDiff
+    local points = {waypoint1}
+    for i = 1, nrOfSegments-1 do
+        local newX = waypoint1[1] + i * xIncrement
+        local newY = waypoint1[2] + i * xIncrement * slope
+        table.insert(points, {newX, newY})
+    end
+    table.insert(points, waypoint2)
+    return(points)
+end
+
+function rotateWaypointAbsolute(waypoint, angle) -- angle measured as difference from the x axis in degrees
+    local z = math.sqrt(waypoint[1]^2 + waypoint[2]^2)
+    local y = math.sin(math.rad(angle))*z
+    local x = math.cos(math.rad(angle))*z
+    return {x, y}
+end
+
+function rotateWaypointRelative(waypoint, angle)
+    local absoluteAngle = angle + math.deg(atan2(waypoint[2], waypoint[1]))  -- atan(modstående, hosliggende)
+    return rotateWaypointAbsolute(waypoint, absoluteAngle)
+end
+
+function rotateWaypointsRelative(List, angle)
+    newList = {}
+    for i, waypoint in ipairs(List) do
+        table.insert(newList, rotateWaypointRelative(waypoint, angle))
+    end
+    return newList
+end
+
+function findRotationForWaypoints(waypoints, option) --returns a rotation at which these waypoint can be reached. Returns false if none exist.
+    for degrees=0,360 do
+        local currentWaypoints = rotateWaypointsRelative(waypoints, degrees)
+        if checkWaypoints(currentWaypoints, option) then
+            return degrees
+        end
+    end
+    return false
+end
+
+function findStrokes(waypoints, option)
+    local evaluationStrokes = {waypoints}
+    local resultStrokes = {}
+    local angles = {}
+    for i, stroke in ipairs(evaluationStrokes) do
+        local rotation = findRotationForWaypoints(stroke, option)
+        if rotation == false then
+            local waypointsA, waypointsB = splitWaypoints(stroke)
+            table.insert(evaluationStrokes, waypointsA)
+            table.insert(evaluationStrokes, waypointsB)
+        else
+            table.insert(resultStrokes, stroke)
+            table.insert(angles, rotation)
+        end
+    end
+    return resultStrokes, angles
+ end
+
+function splitWaypoints(waypoints) --takes a list of waypoints and splits it down the middle returning two lists.
+local tableA, tableB = {}, {}
+local splitpoint = math.floor(tablelength(waypoints))
+    for i, waypoint in ipairs(waypoints) do
+        if i <= splitpoint then
+            table.insert(tableA, waypoint)
+        end
+        if i >= splitpoint then
+            table.insert(tableB, waypoint)
+        end
+    end
+    return tableA, tableB
+end
+
+function checkWaypoints(waypoints, option) --returns true if all waypoints are within boundary
+    local n = true
+    for i, waypoint in ipairs(waypoints) do
+        if not checkWaypoint(waypoint, option) then
+            n = false
+            break
+        end
+    end
+    return n
+end
+
+function checkWaypoint(waypoint, option) --returns true if point is within boundary, false if it is outside.
+    local lines = {}
+    if option == "left" then
+        lines = gBoundaryLinesLeft
+    elseif option == "right" then
+        lines = gBoundaryLinesRight
+    end
+    for i, line in ipairs(lines) do 
+        local d = (waypoint[1] - line[1]) * (line[4] - line[2]) - (waypoint[2] - line[2]) * (line[3] -line[1]) --if the point is on the right side of the vector d will be positive. If left it will be negative. On the line zero.
+        if (d > 0) then --the sign of d indicates which side of the line we are on. If we are on the right side we are outside the boundary and d is positive. left side inside boundary error .
+            return false
+        end
+    end
+    return true
+end
+
+function getXYDiff(point1, point2)
+    local xDiff = point2[1] - point1[1]
+    local yDiff = point2[2] - point1[2]
+    return xDiff, yDiff
+end
+
+function extendWaypoint(point1, point2, dist) -- returns a point3, that is on the line intersecting point1 and point2, but moved dist further.
+    local xDiff, yDiff = getXYDiff(point1, point2)
+    if xDiff^2+yDiff^2 == 0 then
+        popup_message(0, "Extend waypoint failed. Same point." .. setting, false)
+        return
+    end
+    local coef = math.sqrt(dist^2/(xDiff^2+yDiff^2))
+    return {point2[1] + xDiff*coef, point2[2] + yDiff*coef}
+end
+
+
+------------------------------  Section 4 - Modbus Communication  -------------------------------------------------
+
+function getValueModbus(register) --Returns signed values unlike get_modbus_io_status(register)
+    local rawValue = get_modbus_io_status(register)
+    if rawValue >= 2^15 then
+        local flip = -(2^16 - rawValue)
+        return flip
+    else
+        return rawValue
+    end
+end
+
+function getModbusBit(register, bit)
+    local rawValue = get_modbus_io_status(register)
+    return getBit(rawValue, bit)
+end
+
+function setModbusBit(register, bit, value, quiet)
+    local rawValue = get_modbus_io_status(register)
+    local bin = Dec2Bin(rawValue, 16)
+    local pos = 16 - bit
+    if value == 0 then
+        local writeValue = replace_char(pos, bin, '0')
+        writeValue = tonumber(Bin2Dec(writeValue))
+        setValueModbus(register, writeValue, quiet)
+    elseif value == 1 then
+        local writeValue = replace_char(pos, bin, '1')
+	    writeValue = tonumber(Bin2Dec(writeValue))
+        setValueModbus(register, writeValue, quiet)
+    else
+        popup_message(0, "Error. Invalid bitvalue in setModbusBit", false)
+    end
+end
+
+function setValueModbus(register, value, quiet)
+    if not quiet then
+	print("Modbus. Writing value " .. tostring(value) .. " To channel " ..register)
+    end
+    if value < 0 then
+        value = 2^16 + value
+    end
+	set_modbus_io_status(register, value)
+	for i=1, 5 do
+ 		if (get_modbus_io_status(register)==value) then
+			return 1
+		end
+		sleep(0.005)
+	end
+	set_modbus_io_status(register, value)
+	for i=1, 5 do
+ 		if (get_modbus_io_status(register)==value) then 
+			return 1
+		end
+		sleep(0.005)
+	end
+	popup_message(0, "ERROR: Unable to set modbus value. SetValueModbus", false)
+	return -1
+end
+
+
+
+------------------------------ NodeProject ----------------------------
+--[[
+    Use of node system. 
+    Requires globalvariables:
+    - gNodes. Included from other file dict with the information about each node in the tree. 
+    - gCurrentNode. Which holds the name for current Node ie. its key to the gNodes dict.
+    - gCurrentTool. Integer that indicates different toolsettings. A Connection between nodes can be limited to only allow certain tools.  
+]]
+
+
+function searchTree(target)
+    if target == gCurrentNode then
+        print("SearchTree warning: Already at position.")
+        return nil
+    end
+	if (gNodes[target] == nil) then
+		popup_message(0, "Error. Unknown target position in searchTree", false)
+		return
+	end
+    local queue = {}--contains list of paths
+    for i, currentPath in ipairs(gNodes[gCurrentNode][2]) do
+		if (gNodes[currentPath[1]] == nil) then
+			popup_message(0, "Error. Unknown node reference in searchTree", false)
+		end
+        table.insert(queue, {{currentPath[1], currentPath[2], currentPath[3]}})
+    end
+    local nodeName, path, toolOptions, knownNodes
+    local previousVisits = {gCurrentNode}
+    while not (queue[1][#queue[1]][1] == target) do -- If last node of the path matches the target we have found a valid path.
+        nodeName = queue[1][#queue[1]][1]
+        knownNodes = Set(previousVisits )
+        if (not knownNodes[nodeName]) then
+            print("nodeName: " .. nodeName)
+            for i, currentPath in ipairs(gNodes[nodeName][2]) do
+			if currentPath[4] == nil then
+				popup_message(0, "Error. Unknown node tool reference in searchTree", false)
+			end
+                toolOptions = Set(currentPath[4])
+                if (toolOptions[gCurrentTool]) then
+                    if (gNodes[currentPath[1]] == nil) then
+                        popup_message(0, "Error. Unknown node reference in searchTree", false)
+                    end
+                    path = {}
+                    path = deepCopy(queue[1])
+                    table.insert(path, {currentPath[1], currentPath[2], currentPath[3]}) --create path with additional node.
+                    table.insert(queue, deepCopy(path)) -- insert amended path at the back of the queue.
+                end
+            end
+        end
+        table.remove(queue, 1) --remove the path we were looking at
+        table.insert(previousVisits, nodeName)
+		local next = next
+        if next(queue) == nil then
+            popup_message(0, "Error. No path found in searchTree", false)
+        end
+    end
+    print("Found path to " .. target)
+    PrintTable(queue[1])
+    return deepCopy(queue[1]) -- return the path in format {{nodeName1, movetype1, speed1}, {nodeName2, movetype2, speed2}, ...}
+end
+
+function movePath(endNode) --move along path to node with name: endNode. 
+    if not checkPose(gNodes[gCurrentNode][1]) then
+        popup_message(0, "Error. Robot not at currentNode pose in movePath", false)
+        return
+    end
+    local path = searchTree(endNode)
+    if path == nil then
+        return
+    end
+    for i, node in ipairs(path) do
+        print("Moving " .. node[2] .. "wise to " .. node[1] .." with speed " .. node[3])
+        if gNodes[node[1]][3] == "none" then
+            move(gNodes[node[1]][1], node[2], node[3], true)
+        else
+            if gOffsetTable[gNodes[node[1]][3]] == nil then
+			popup_message(0, "Error. No offfset reference found in movePath", false)
+		end
+            setOffset(gNodes[node[1]][3])
+            move(gNodes[node[1]][1], node[2], node[3], true)
+            init_global_move_profile()
+        end
+        gCurrentNode = node[1]
+    end
+end
