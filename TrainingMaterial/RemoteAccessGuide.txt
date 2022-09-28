@@ -1,0 +1,33 @@
+steps for communication: 
+Screen: 
+Use x11 vnc https://tecadmin.net/setup-x11vnc-server-on-ubuntu-linuxmint/
+
+openSSH
+Install openSSH server. https://phoenixnap.com/kb/ssh-to-connect-to-remote-server-linux-or-windows#htoc-how-to-install-an-openssh-server
+sudo apt-get install openssh-server ii.
+manage connection
+sudo service ssh restart
+sudo service ssh status
+
+Change configuration at:
+$ sudo nano /etc/ssh/sshd_config
+you need to change lines for password settings:
+PermitRootAccess yes
+PasswordAuthentication yes
+Check what port you are using (fx 8822)
+Port 8822
+
+Allow that port through firewall
+$ sudo ufw allow 8822
+ 
+Reset passwd if necessary with command
+$ passwd
+
+now go with putty and connect. username root password aubo. 
+
+
+File transfer use scp:
+https://bharatdwarkani.medium.com/copying-a-file-from-windows-to-linux-through-ssh-17f4f4c2eca8
+from windows command might look like: 
+scp -P 8822 C:/projects/commonLib.aubo C:/projects/HBCPaint/HBCPaint.aubo C:/projects/HBCPaint/HBCPaintNodes.aubo root@192.168.2.41:/root/AuboRobotWorkSpace/teachpendant/share/teachpendant/script/
+Or pay for x11 might work to.
