@@ -28,6 +28,9 @@ now go with putty and connect. username root password aubo.
 
 File transfer use scp:
 https://bharatdwarkani.medium.com/copying-a-file-from-windows-to-linux-through-ssh-17f4f4c2eca8
-from windows command might look like: 
-scp -P 8822 C:/projects/commonLib.aubo C:/projects/HBCPaint/HBCPaint.aubo C:/projects/HBCPaint/HBCPaintNodes.aubo root@192.168.2.41:/root/AuboRobotWorkSpace/teachpendant/share/teachpendant/script/
-Or pay for x11 might work to.
+from windows command might look like, to transfer from pc to robot: 
+scp -P 8822 C:/projects/commonLib.aubo C:/projects/HBCPaint/errorList.aubo C:/projects/HBCPaint/HBCPaint.aubo C:/projects/HBCPaint/HBCPaintNodes.aubo root@192.168.2.41:/root/AuboRobotWorkSpace/teachpendant/share/teachpendant/script/
+or from robot to pc:
+scp -P 8822 root@192.168.2.41:/root/AuboRobotWorkSpace/teachpendant/share/teachpendant/project/Positions/main.aubo C:/projects/HBCPaint/
+scp -P 8822 root@192.168.2.41:/root/AuboRobotWorkSpace/teachpendant/share/teachpendant/script/PositionsLog.aubo C:/projects/HBCPaint/
+Or pay for x11vnc, that might work to.
