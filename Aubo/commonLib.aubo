@@ -12,10 +12,18 @@ function fileExists(file)
     return f ~= nil
 end
 
-function checkPose(pose, dist) --returns true if the robots current pose is close to the given pose parameter.
+function checkPose(pose, dist, offset, tool) --returns true if the robots current pose is close to the given pose parameter.
+    offset = offset or {{0,0,0}, {1,0,0,0}, "flange"} -- Adjust the given pose with an offset.
+    tool = tool or {kin = {{0,0,0},{1,0,0,0}}, dyn = {0, {0,0,0}}}
+    dist = dist or 0.1      -- if you pass an offset you must also pass the distance.
     local currentPose = get_current_waypoint().joint
-    dist = dist or 0.1
 	currentPose = {currentPose["j1"], currentPose["j2"], currentPose["j3"], currentPose["j4"], currentPose["j5"], currentPose["j6"],}
+
+    local toolPos = tool["kin"][1]
+    local toolOri = tool["kin"][2]
+    local posCurrent = base_to_user(pose, toolKin, toolOri)
+
+
 	if euclideanDistance(currentPose, pose) >= dist then
         return false
     else
@@ -23,11 +31,7 @@ function checkPose(pose, dist) --returns true if the robots current pose is clos
 	end
 end
 
-function waypointCompare(a,b)
-    return a[1] < b[1]
-end
-
-function replaceChar(pos, str, r)
+function replaceChar(pos, str, r) -- replace character at position: pos, in string: str, with character: r.
     return str:sub(1, pos-1) .. r .. str:sub(pos+1)
 end
 
@@ -440,9 +444,9 @@ end
 function checkPosition(newPosition, dist, tool) -- compares given position with the current position of robot and returns true if they are within dist of each other
     local temp = get_current_waypoint().joint
     local jointCurrent = {temp.j1, temp.j2, temp.j3, temp.j4, temp.j5, temp.j6}
-    local toolKin = gTools[tool]["kin"][1]
+    local toolPos = gTools[tool]["kin"][1]
     local toolOri = gTools[tool]["kin"][2]
-    local posCurrent = base_to_user(jointCurrent, toolKin, toolOri)
+    local posCurrent = base_to_user(jointCurrent, toolPos, toolOri)
     return (euclideanDistance(newPosition, posCurrent) < dist)
 end
 
@@ -483,15 +487,16 @@ end
     Requires globalvariables:
     - gNodes. Included from other file dict with the information about each node in the tree. 
     - gCurrentNode. Which holds the name for current Node ie. its key to the gNodes dict.
+    - gTools. List of toolSettings.
     - gCurrentTool. Integer that indicates different toolsettings. A Connection between nodes can be limited to only allow certain tools.  
     - gSimulation. Optional. If true movement is not performed. gCurrentNode is still changed to match target endNode.
     ]]
 
 function setOffset(offsetName)
     print("Setting offset: " .. offsetName)
-    local offset = gOffsetTable[offsetName][2]
-    local rotation = gOffsetTable[offsetName][3]
-    local toolName = gOffsetTable[offsetName][4]
+    local offset = gOffsetTable[offsetName][1]
+    local rotation = gOffsetTable[offsetName][2]
+    local toolName = gOffsetTable[offsetName][3]
     local toolPos = gTools[toolName]["kin"][1]
     local toolOri = gTools[toolName]["kin"][2]
 	set_relative_offset(offset, rotation, toolPos, toolOri)
@@ -559,11 +564,13 @@ function searchTree(target)
     return deepCopy(queue[1]) -- return the path in format {{nodeName1, movetype1, speed1}, {nodeName2, movetype2, speed2}, ...}
 end
 
-local filePathLog = "/root/AuboRobotWorkSpace/teachpendant/share/teachpendant/script/PositionsLog.aubo"
+function resetPoseLog()
+    local filePathLog = "/root/AuboRobotWorkSpace/teachpendant/share/teachpendant/script/PositionsLog.aubo"
+    fileLog = io.open(filePathLog, 'w')
+    fileLog:write("start\n")
+    fileLog:close()
+end
 
-fileLog = io.open(filePathLog, 'w')
-fileLog:write("start\n")
-fileLog:close()
 function savePose(name)
     local filepath = "/root/AuboRobotWorkSpace/teachpendant/share/teachpendant/script/PositionsLog.aubo"
     file = io.open(filepath, 'a')
@@ -725,4 +732,16 @@ function rotatePointAboutAxis(point, axis, angle) -- point in {x,y,z} format, ax
         popup_message(0, "Error. Wrong length of point in rotatePointAboutAxis", false)
     end
     return newPoint
+end
+
+function createHomogeneousMatrix(quaternion, position)
+    local w = quaternion[1]
+    local x = quaternion[2]
+    local y = quaternion[3]
+    local z = quaternion[4]
+    local row1 = {1-2*y^2-2*z^2, 2*x*y-2*z*w, 2*x*z+2*y*w}
+    local row2 = {2*x*y+2*z*w, 1-2*x^2-2*z^2. 2*y*z-2*x*w}
+    local row3 = {2*x*z-2*y*w, 2*y*z+2*x*w, 1-2x^2-2y^2}
+
+
 end
