@@ -12,7 +12,18 @@ function fileExists(file)
     return f ~= nil
 end
 
-function checkPose(pose, dist, offset, tool) --returns true if the robots current pose is close to the given pose parameter.
+function checkPose(pose, dist) --returns true if the robots current pose is close to the given pose parameter.
+    dist = dist or 0.1      -- if you pass an offset you must also pass the distance.
+    local currentPose = get_current_waypoint().joint
+	currentPose = {currentPose["j1"], currentPose["j2"], currentPose["j3"], currentPose["j4"], currentPose["j5"], currentPose["j6"],}
+	if euclideanDistance(currentPose, pose) >= dist then
+        return false
+    else
+        return true
+	end
+end
+
+function checkPose2(pose, dist, offset, tool) --returns true if the robots current pose is close to the given pose parameter.
     offset = offset or {{0,0,0}, {1,0,0,0}, "flange"} -- Adjust the given pose with an offset.
     tool = tool or {kin = {{0,0,0},{1,0,0,0}}, dyn = {0, {0,0,0}}}
     dist = dist or 0.1      -- if you pass an offset you must also pass the distance.
@@ -740,8 +751,6 @@ function createHomogeneousMatrix(quaternion, position)
     local y = quaternion[3]
     local z = quaternion[4]
     local row1 = {1-2*y^2-2*z^2, 2*x*y-2*z*w, 2*x*z+2*y*w}
-    local row2 = {2*x*y+2*z*w, 1-2*x^2-2*z^2. 2*y*z-2*x*w}
-    local row3 = {2*x*z-2*y*w, 2*y*z+2*x*w, 1-2x^2-2y^2}
-
-
+    local row2 = {2*x*y+2*z*w, 1-2*x^2-2*z^2, 2*y*z-2*x*w}
+    local row3 = {2*x*z-2*y*w, 2*y*z+2*x*w, 1-2*x^2-2*y^2}
 end
