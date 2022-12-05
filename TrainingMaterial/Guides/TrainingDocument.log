@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.5.2)  16 NOV 2022 13:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.5.2)  17 NOV 2022 11:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -166,6 +166,25 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip49
 )
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
+
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
+
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
+Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
+)
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 107.
+ (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen143
+\Gin@req@width=\dimen144
+)
 (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdfte
 x.def
 File: l3backend-pdftex.def 2022-02-07 L3 backend support: PDF output (pdfTeX)
@@ -174,25 +193,25 @@ File: l3backend-pdftex.def 2022-02-07 L3 backend support: PDF output (pdfTeX)
 ) (TrainingDocument.aux)
 \openout1 = `TrainingDocument.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-Package hyperref Info: Link coloring OFF on input line 10.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+Package hyperref Info: Link coloring OFF on input line 11.
 
 (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -206,21 +225,44 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count270
 )
-LaTeX Info: Redefining \ref on input line 10.
-LaTeX Info: Redefining \pageref on input line 10.
-LaTeX Info: Redefining \nameref on input line 10.
+LaTeX Info: Redefining \ref on input line 11.
+LaTeX Info: Redefining \pageref on input line 11.
+LaTeX Info: Redefining \nameref on input line 11.
  (TrainingDocument.out) (TrainingDocument.out)
 \@outlinefile=\write3
 \openout3 = `TrainingDocument.out'.
 
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 13.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 13.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 13.
 
-(TrainingDocument.toc
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count271
+\scratchdimen=\dimen145
+\scratchbox=\box51
+\nofMPsegments=\count272
+\nofMParguments=\count273
+\everyMPshowfont=\toks19
+\MPscratchCnt=\count274
+\MPscratchDim=\dimen146
+\MPnumerator=\count275
+\makeMPintoPDFobject=\count276
+\everyMPtoPDFconversion=\toks20
+)
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-bas
+e.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
+))
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 14.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 14.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 14.
+ (TrainingDocument.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 3.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -231,56 +273,334 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 
  [1
 
-{C:/Users/mnj/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2] [3] [4]
-Overfull \hbox (11.49945pt too wide) in paragraph at lines 118--127
+{C:/Users/mnj/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+<../../Images/FrontCompactAuboBox.jpg, id=176, 4047.12pt x 3035.34pt>
+File: ../../Images/FrontCompactAuboBox.jpg Graphic file (type jpg)
+<use ../../Images/FrontCompactAuboBox.jpg>
+Package pdftex.def Info: ../../Images/FrontCompactAuboBox.jpg  used on input li
+ne 40.
+(pdftex.def)             Requested size: 345.0pt x 258.71838pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 40--41
+ [] 
+ []
+
+[2] [3 <../../Images/FrontCompactAuboBox.jpg>] [4]
+Overfull \hbox (11.49945pt too wide) in paragraph at lines 122--131
 []\OT1/cmr/m/n/10 On the robot chang-ing the static IP is done with the file /e
 tc/network/interfaces
  []
 
-
-Overfull \hbox (248.84842pt too wide) in paragraph at lines 143--145
+[5]
+Overfull \hbox (248.84842pt too wide) in paragraph at lines 147--149
 \OT1/cmr/m/n/10 But this is a di-rect link to the drive where they host it: htt
 ps://drive.google.com/drive/folders/1vxmE4JyKkqD4IaGncI1EtJIXRtCnlECY
  []
 
 
-Overfull \hbox (21.2786pt too wide) in paragraph at lines 149--155
+Overfull \hbox (21.2786pt too wide) in paragraph at lines 153--159
 \OT1/cmr/m/n/10 https://drive.google.com/drive/folders/1e2sAyCd5S1s4jH7FRyMwZzT
 y7VTZb2NE
  []
 
-[5]
-
-LaTeX Warning: Command \textquoteright invalid in math mode on input line 181.
-
-
-LaTeX Warning: Command \textquoteleft invalid in math mode on input line 181.
-
-
-LaTeX Warning: Command \textquoteright invalid in math mode on input line 181.
-
 [6]
 
-LaTeX Warning: Command \textquoteright invalid in math mode on input line 181.
+LaTeX Warning: Command \textquoteright invalid in math mode on input line 185.
 
 
-LaTeX Warning: Command \textquoteleft invalid in math mode on input line 181.
+LaTeX Warning: Command \textquoteleft invalid in math mode on input line 185.
 
 
-LaTeX Warning: Command \textquoteright invalid in math mode on input line 181.
+LaTeX Warning: Command \textquoteright invalid in math mode on input line 185.
 
-[7] [8] [9] [10] (TrainingDocument.aux)
+
+LaTeX Warning: Command \textquoteright invalid in math mode on input line 185.
+
+
+LaTeX Warning: Command \textquoteleft invalid in math mode on input line 185.
+
+
+LaTeX Warning: Command \textquoteright invalid in math mode on input line 185.
+
+[7]
+<../../Images/systemSettings.png, id=212, 853.1875pt x 602.25pt>
+File: ../../Images/systemSettings.png Graphic file (type png)
+<use ../../Images/systemSettings.png>
+Package pdftex.def Info: ../../Images/systemSettings.png  used on input line 19
+5.
+(pdftex.def)             Requested size: 345.0pt x 243.53314pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 195--196
+ [] 
+ []
+
+
+LaTeX Warning: Command \textquoteleft invalid in math mode on input line 197.
+
+
+LaTeX Warning: Command \textquoteright invalid in math mode on input line 197.
+
+<../../Images/TextEntry.png, id=214, 853.1875pt x 484.81125pt>
+File: ../../Images/TextEntry.png Graphic file (type png)
+<use ../../Images/TextEntry.png>
+Package pdftex.def Info: ../../Images/TextEntry.png  used on input line 199.
+(pdftex.def)             Requested size: 345.0pt x 196.04417pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 199--200
+ [] 
+ []
+
+[8 <../../Images/systemSettings.png>]
+<../../Images/addingDanishLayout.png, id=220, 399.4925pt x 404.51125pt>
+File: ../../Images/addingDanishLayout.png Graphic file (type png)
+<use ../../Images/addingDanishLayout.png>
+Package pdftex.def Info: ../../Images/addingDanishLayout.png  used on input lin
+e 204.
+(pdftex.def)             Requested size: 345.0pt x 349.34807pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 204--205
+ [] 
+ []
+
+[9 <../../Images/TextEntry.png>]
+<../../Images/danishAddedToInputSources.png, id=226, 853.1875pt x 484.81125pt>
+File: ../../Images/danishAddedToInputSources.png Graphic file (type png)
+<use ../../Images/danishAddedToInputSources.png>
+Package pdftex.def Info: ../../Images/danishAddedToInputSources.png  used on in
+put line 209.
+(pdftex.def)             Requested size: 345.0pt x 196.04417pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 209--210
+ [] 
+ []
+
+[10 <../../Images/addingDanishLayout.png>]
+<../../Images/LanguageChange.png, id=232, 616.10175pt x 469.755pt>
+File: ../../Images/LanguageChange.png Graphic file (type png)
+<use ../../Images/LanguageChange.png>
+Package pdftex.def Info: ../../Images/LanguageChange.png  used on input line 21
+4.
+(pdftex.def)             Requested size: 345.0pt x 263.04668pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 214--215
+ [] 
+ []
+
+[11 <../../Images/danishAddedToInputSources.png> <../../Images/LanguageChange.p
+ng>]
+File: ../../Images/systemSettings.png Graphic file (type png)
+<use ../../Images/systemSettings.png>
+Package pdftex.def Info: ../../Images/systemSettings.png  used on input line 23
+0.
+(pdftex.def)             Requested size: 345.0pt x 243.53314pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 230--231
+ [] 
+ []
+
+<../../Images/networkWired.png, id=241, 853.1875pt x 374.39874pt>
+File: ../../Images/networkWired.png Graphic file (type png)
+<use ../../Images/networkWired.png>
+Package pdftex.def Info: ../../Images/networkWired.png  used on input line 235.
+
+(pdftex.def)             Requested size: 345.0pt x 151.39642pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 235--236
+ [] 
+ []
+
+[12]
+<../../Images/wireOptionsEthernet.png, id=246, 474.77374pt x 490.83376pt>
+File: ../../Images/wireOptionsEthernet.png Graphic file (type png)
+<use ../../Images/wireOptionsEthernet.png>
+Package pdftex.def Info: ../../Images/wireOptionsEthernet.png  used on input li
+ne 240.
+(pdftex.def)             Requested size: 345.0pt x 356.68044pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 240--241
+ [] 
+ []
+
+[13 <../../Images/networkWired.png>]
+<../../Images/IPv4SettingsAutomatic.png, id=253, 474.77374pt x 490.83376pt>
+File: ../../Images/IPv4SettingsAutomatic.png Graphic file (type png)
+<use ../../Images/IPv4SettingsAutomatic.png>
+Package pdftex.def Info: ../../Images/IPv4SettingsAutomatic.png  used on input 
+line 244.
+(pdftex.def)             Requested size: 345.0pt x 356.68044pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 244--245
+ [] 
+ []
+
+[14 <../../Images/wireOptionsEthernet.png>]
+<../../Images/ipv4SettingsManual.png, id=259, 474.77374pt x 490.83376pt>
+File: ../../Images/ipv4SettingsManual.png Graphic file (type png)
+<use ../../Images/ipv4SettingsManual.png>
+Package pdftex.def Info: ../../Images/ipv4SettingsManual.png  used on input lin
+e 248.
+(pdftex.def)             Requested size: 345.0pt x 356.68044pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 248--249
+ [] 
+ []
+
+[15 <../../Images/IPv4SettingsAutomatic.png>]
+<../../Images/IPv4SettingsWithAdress.png, id=265, 474.77374pt x 490.83376pt>
+File: ../../Images/IPv4SettingsWithAdress.png Graphic file (type png)
+<use ../../Images/IPv4SettingsWithAdress.png>
+Package pdftex.def Info: ../../Images/IPv4SettingsWithAdress.png  used on input
+ line 252.
+(pdftex.def)             Requested size: 345.0pt x 356.68044pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 252--253
+ [] 
+ []
+
+[16 <../../Images/ipv4SettingsManual.png>] [17 <../../Images/IPv4SettingsWithAd
+ress.png>]
+<../../Images/settings.png, id=279, 962.59625pt x 746.79pt>
+File: ../../Images/settings.png Graphic file (type png)
+<use ../../Images/settings.png>
+Package pdftex.def Info: ../../Images/settings.png  used on input line 282.
+(pdftex.def)             Requested size: 345.0pt x 267.6477pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 282--283
+ [] 
+ []
+
+<../../Images/settingsSystem.png, id=280, 962.59625pt x 746.79pt>
+File: ../../Images/settingsSystem.png Graphic file (type png)
+<use ../../Images/settingsSystem.png>
+Package pdftex.def Info: ../../Images/settingsSystem.png  used on input line 28
+6.
+(pdftex.def)             Requested size: 345.0pt x 267.6477pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 286--287
+ [] 
+ []
+
+[18 <../../Images/settings.png>]
+<../../Images/update.png, id=286, 962.59625pt x 746.79pt>
+File: ../../Images/update.png Graphic file (type png)
+<use ../../Images/update.png>
+Package pdftex.def Info: ../../Images/update.png  used on input line 290.
+(pdftex.def)             Requested size: 345.0pt x 267.6477pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 290--291
+ [] 
+ []
+
+[19 <../../Images/settingsSystem.png>]
+<../../Images/lisrofUpdateFiles.png, id=293, 962.59625pt x 746.79pt>
+File: ../../Images/lisrofUpdateFiles.png Graphic file (type png)
+<use ../../Images/lisrofUpdateFiles.png>
+Package pdftex.def Info: ../../Images/lisrofUpdateFiles.png  used on input line
+ 294.
+(pdftex.def)             Requested size: 345.0pt x 267.6477pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 294--295
+ [] 
+ []
+
+[20 <../../Images/update.png>] [21 <../../Images/lisrofUpdateFiles.png>]
+File: ../../Images/settings.png Graphic file (type png)
+<use ../../Images/settings.png>
+Package pdftex.def Info: ../../Images/settings.png  used on input line 317.
+(pdftex.def)             Requested size: 345.0pt x 267.6477pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 317--318
+ [] 
+ []
+
+File: ../../Images/settingsSystem.png Graphic file (type png)
+<use ../../Images/settingsSystem.png>
+Package pdftex.def Info: ../../Images/settingsSystem.png  used on input line 32
+1.
+(pdftex.def)             Requested size: 345.0pt x 267.6477pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 321--322
+ [] 
+ []
+
+[22]
+File: ../../Images/update.png Graphic file (type png)
+<use ../../Images/update.png>
+Package pdftex.def Info: ../../Images/update.png  used on input line 325.
+(pdftex.def)             Requested size: 345.0pt x 267.6477pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 325--326
+ [] 
+ []
+
+[23]
+<../../Images/FileExport.png, id=314, 962.59625pt x 746.79pt>
+File: ../../Images/FileExport.png Graphic file (type png)
+<use ../../Images/FileExport.png>
+Package pdftex.def Info: ../../Images/FileExport.png  used on input line 329.
+(pdftex.def)             Requested size: 345.0pt x 267.6477pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 329--330
+ [] 
+ []
+
+[24]
+File: ../../Images/settings.png Graphic file (type png)
+<use ../../Images/settings.png>
+Package pdftex.def Info: ../../Images/settings.png  used on input line 342.
+(pdftex.def)             Requested size: 345.0pt x 267.6477pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 342--343
+ [] 
+ []
+
+[25 <../../Images/FileExport.png>]
+File: ../../Images/settingsSystem.png Graphic file (type png)
+<use ../../Images/settingsSystem.png>
+Package pdftex.def Info: ../../Images/settingsSystem.png  used on input line 34
+6.
+(pdftex.def)             Requested size: 345.0pt x 267.6477pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 346--347
+ [] 
+ []
+
+[26]
+File: ../../Images/update.png Graphic file (type png)
+<use ../../Images/update.png>
+Package pdftex.def Info: ../../Images/update.png  used on input line 350.
+(pdftex.def)             Requested size: 345.0pt x 267.6477pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 350--351
+ [] 
+ []
+
+[27]
+<../../Images/FileImport.png, id=335, 962.59625pt x 746.79pt>
+File: ../../Images/FileImport.png Graphic file (type png)
+<use ../../Images/FileImport.png>
+Package pdftex.def Info: ../../Images/FileImport.png  used on input line 354.
+(pdftex.def)             Requested size: 345.0pt x 267.6477pt.
+
+Overfull \hbox (25.00003pt too wide) in paragraph at lines 354--355
+ [] 
+ []
+
+[28] [29 <../../Images/FileImport.png>] (TrainingDocument.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
 Package rerunfilecheck Info: File `TrainingDocument.out' has not changed.
 (rerunfilecheck)             Checksum: 6D1EEBB49E1D9CA7E26111E839E185DB;4312.
  ) 
 Here is how much of TeX's memory you used:
- 7369 strings out of 478582
- 118341 string characters out of 2845289
- 419445 words of memory out of 3000000
- 25465 multiletter control sequences out of 15000+600000
+ 8334 strings out of 478582
+ 135488 string characters out of 2845289
+ 429572 words of memory out of 3000000
+ 26361 multiletter control sequences out of 15000+600000
  473849 words of font info for 43 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 60i,6n,63p,451b,395s stack positions out of 10000i,1000n,20000p,200000b,80000s
+ 60i,6n,63p,451b,459s stack positions out of 10000i,1000n,20000p,200000b,80000s
  <C:\Users\mnj\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm10
 00.pk><C:/Users/mnj/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
 m/cmbx10.pfb><C:/Users/mnj/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
@@ -294,9 +614,9 @@ Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/mnj/AppData/L
 ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/mnj/AppD
 ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/m
 nj/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
-Output written on TrainingDocument.pdf (10 pages, 194586 bytes).
+Output written on TrainingDocument.pdf (29 pages, 3686439 bytes).
 PDF statistics:
- 296 PDF objects out of 1000 (max. 8388607)
- 44 named destinations out of 1000 (max. 500000)
- 257 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 412 PDF objects out of 1000 (max. 8388607)
+ 63 named destinations out of 1000 (max. 500000)
+ 342 words of extra memory for PDF output out of 10000 (max. 10000000)
 

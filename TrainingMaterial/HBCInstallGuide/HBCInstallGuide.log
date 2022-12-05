@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.5.2)  16 NOV 2022 13:38
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.5.2)  18 NOV 2022 09:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -28,6 +28,14 @@ Package: inputenc 2021/02/14 v1.3d Input encoding file
 \inpenc@prehook=\toks16
 \inpenc@posthook=\toks17
 )
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count193
+\float@exts=\toks18
+\float@box=\box50
+\@float@everytoks=\toks19
+\@floatcapt=\box51
+)
 (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
 Package: hyperref 2022-02-21 v7.00n Hypertext links for LaTeX
 
@@ -50,7 +58,7 @@ Package pdftexcmds Info: \pdf@ifprimitive is available.
 Package pdftexcmds Info: \pdfdraftmode found.
 ) (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
 Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
-\KV@toks@=\toks18
+\KV@toks@=\toks20
 )
 (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/kvsetkeys\kvsetkeys.sty
 Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
@@ -74,8 +82,8 @@ Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
 )
 \@linkdim=\dimen139
-\Hy@linkcounter=\count193
-\Hy@pagecounter=\count194
+\Hy@linkcounter=\count194
+\Hy@pagecounter=\count195
 
 (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
 File: pd1enc.def 2022-02-21 v7.00n Hyperref: PDFDocEncoding definition (HO)
@@ -88,7 +96,7 @@ Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/generic/etexcmds\etexcmds.sty
 Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
 )
-\Hy@SavedSpaceFactor=\count195
+\Hy@SavedSpaceFactor=\count196
 
 (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def
 File: puenc.def 2022-02-21 v7.00n Hyperref: PDF Unicode definition (HO)
@@ -102,7 +110,7 @@ Package hyperref Info: Plain pages OFF on input line 4152.
 Package hyperref Info: Backreferencing OFF on input line 4157.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4390.
-\c@Hy@tempcnt=\count196
+\c@Hy@tempcnt=\count197
 
 (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
 \Urlmuskip=\muskip16
@@ -119,7 +127,7 @@ ty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count197
+\Fld@menulength=\count198
 \Field@Width=\dimen141
 \Fld@charsize=\dimen142
 Package hyperref Info: Hyper figures OFF on input line 6027.
@@ -136,9 +144,9 @@ LaTeX Info: Redefining \pageref on input line 6101.
 Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
 package with kernel methods
 )
-\Hy@abspage=\count198
-\c@Item=\count199
-\c@Hfootnote=\count266
+\Hy@abspage=\count199
+\c@Item=\count266
+\c@Hfootnote=\count267
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
 
@@ -150,8 +158,8 @@ Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
 kage
 with kernel methods
 )
-\Fld@listcount=\count267
-\c@bookmark@seq@number=\count268
+\Fld@listcount=\count268
+\c@bookmark@seq@number=\count269
 
 (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfilec
 heck.sty
@@ -166,34 +174,53 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip49
 )
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
+
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
+
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
+Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
+)
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 107.
+ (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen143
+\Gin@req@width=\dimen144
+)
 (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdfte
 x.def
 File: l3backend-pdftex.def 2022-02-07 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count269
-\l__pdf_internal_box=\box50
-)
-No file HBCInstallGuide.aux.
+\l__color_backend_stack_int=\count270
+\l__pdf_internal_box=\box52
+) (HBCInstallGuide.aux)
 \openout1 = `HBCInstallGuide.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-Package hyperref Info: Link coloring OFF on input line 10.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+Package hyperref Info: Link coloring OFF on input line 12.
+
 (C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
 
@@ -204,52 +231,304 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 string.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count270
+\c@section@level=\count271
 )
-LaTeX Info: Redefining \ref on input line 10.
-LaTeX Info: Redefining \pageref on input line 10.
-LaTeX Info: Redefining \nameref on input line 10.
+LaTeX Info: Redefining \ref on input line 12.
+LaTeX Info: Redefining \pageref on input line 12.
+LaTeX Info: Redefining \nameref on input line 12.
+ (HBCInstallGuide.out) (HBCInstallGuide.out)
 \@outlinefile=\write3
 \openout3 = `HBCInstallGuide.out'.
 
+
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count272
+\scratchdimen=\dimen145
+\scratchbox=\box53
+\nofMPsegments=\count273
+\nofMParguments=\count274
+\everyMPshowfont=\toks21
+\MPscratchCnt=\count275
+\MPscratchDim=\dimen146
+\MPnumerator=\count276
+\makeMPintoPDFobject=\count277
+\everyMPtoPDFconversion=\toks22
+)
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-bas
+e.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(C:\Users\mnj\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
+))
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 13.
+(Font)              <12> on input line 15.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 13.
+(Font)              <8> on input line 15.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 13.
+(Font)              <6> on input line 15.
+ (HBCInstallGuide.toc
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 3.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 3.
+)
 \tf@toc=\write4
 \openout4 = `HBCInstallGuide.toc'.
 
  [1
 
-{C:/Users/mnj/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (HBCInstallGui
-de.aux)
+{C:/Users/mnj/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+<../../Images/FrontCompactAuboBox.jpg, id=84, 4047.12pt x 3035.34pt>
+File: ../../Images/FrontCompactAuboBox.jpg Graphic file (type jpg)
+<use ../../Images/FrontCompactAuboBox.jpg>
+Package pdftex.def Info: ../../Images/FrontCompactAuboBox.jpg  used on input li
+ne 39.
+(pdftex.def)             Requested size: 276.00105pt x 206.98396pt.
+<../../Images/loginScreen.png, id=85, 1027.84pt x 770.88pt>
+File: ../../Images/loginScreen.png Graphic file (type png)
+<use ../../Images/loginScreen.png>
+Package pdftex.def Info: ../../Images/loginScreen.png  used on input line 48.
+(pdftex.def)             Requested size: 276.00105pt x 206.9994pt.
+ [2 <../../Images/FrontCompactAuboBox.jpg>]
+<../../Images/systemSettingsButton.png, id=99, 190.91325pt x 292.09125pt>
+File: ../../Images/systemSettingsButton.png Graphic file (type png)
+<use ../../Images/systemSettingsButton.png>
+Package pdftex.def Info: ../../Images/systemSettingsButton.png  used on input l
+ine 57.
+(pdftex.def)             Requested size: 103.50105pt x 158.35535pt.
+<../../Images/systemSettings.png, id=101, 853.1875pt x 602.25pt>
+File: ../../Images/systemSettings.png Graphic file (type png)
+<use ../../Images/systemSettings.png>
+Package pdftex.def Info: ../../Images/systemSettings.png  used on input line 60
+.
+(pdftex.def)             Requested size: 276.00105pt x 194.82834pt.
+ [3 <../../Images/loginScreen.png>]
+<../../Images/networkWired.png, id=111, 853.1875pt x 374.39874pt>
+File: ../../Images/networkWired.png Graphic file (type png)
+<use ../../Images/networkWired.png>
+Package pdftex.def Info: ../../Images/networkWired.png  used on input line 64.
+(pdftex.def)             Requested size: 276.00105pt x 121.11829pt.
+ [4 <../../Images/systemSettingsButton.png> <../../Images/systemSettings.png> <
+../../Images/networkWired.png>]
+<../../Images/wireOptionsEthernet.png, id=120, 474.77374pt x 490.83376pt>
+File: ../../Images/wireOptionsEthernet.png Graphic file (type png)
+<use ../../Images/wireOptionsEthernet.png>
+Package pdftex.def Info: ../../Images/wireOptionsEthernet.png  used on input li
+ne 69.
+(pdftex.def)             Requested size: 276.00105pt x 285.35034pt.
+<../../Images/IPv4SettingsAutomatic.png, id=121, 474.77374pt x 490.83376pt>
+File: ../../Images/IPv4SettingsAutomatic.png Graphic file (type png)
+<use ../../Images/IPv4SettingsAutomatic.png>
+Package pdftex.def Info: ../../Images/IPv4SettingsAutomatic.png  used on input 
+line 73.
+(pdftex.def)             Requested size: 276.00105pt x 285.35034pt.
+ [5 <../../Images/wireOptionsEthernet.png>]
+<../../Images/ipv4SettingsManual.png, id=130, 474.77374pt x 490.83376pt>
+File: ../../Images/ipv4SettingsManual.png Graphic file (type png)
+<use ../../Images/ipv4SettingsManual.png>
+Package pdftex.def Info: ../../Images/ipv4SettingsManual.png  used on input lin
+e 77.
+(pdftex.def)             Requested size: 276.00105pt x 285.35034pt.
+ [6 <../../Images/IPv4SettingsAutomatic.png>]
+<../../Images/IPv4SettingsWithAdress.png, id=138, 474.77374pt x 490.83376pt>
+File: ../../Images/IPv4SettingsWithAdress.png Graphic file (type png)
+<use ../../Images/IPv4SettingsWithAdress.png>
+Package pdftex.def Info: ../../Images/IPv4SettingsWithAdress.png  used on input
+ line 81.
+(pdftex.def)             Requested size: 276.00105pt x 285.35034pt.
+ [7 <../../Images/ipv4SettingsManual.png>]
+File: ../../Images/loginScreen.png Graphic file (type png)
+<use ../../Images/loginScreen.png>
+Package pdftex.def Info: ../../Images/loginScreen.png  used on input line 97.
+(pdftex.def)             Requested size: 276.00105pt x 206.9994pt.
 
-Package rerunfilecheck Warning: File `HBCInstallGuide.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
+Overfull \hbox (1.11063pt too wide) in paragraph at lines 94--98
+[]\OT1/cmr/m/n/10 Open AuboPE by double-clicking the short-cut on the desk-top 
+or by restart-
+ []
 
-Package rerunfilecheck Info: Checksums for `HBCInstallGuide.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  D0584859F9CB129EDE91D087B043AE49;111.
+[8 <../../Images/IPv4SettingsWithAdress.png>]
+<../../Images/RobotInitForm.png, id=156, 1027.84pt x 770.88pt>
+File: ../../Images/RobotInitForm.png Graphic file (type png)
+<use ../../Images/RobotInitForm.png>
+Package pdftex.def Info: ../../Images/RobotInitForm.png  used on input line 101
+.
+(pdftex.def)             Requested size: 276.00105pt x 206.9994pt.
+<../../Images/settings.png, id=157, 962.59625pt x 746.79pt>
+File: ../../Images/settings.png Graphic file (type png)
+<use ../../Images/settings.png>
+Package pdftex.def Info: ../../Images/settings.png  used on input line 106.
+(pdftex.def)             Requested size: 276.00105pt x 214.1136pt.
+ [9 <../../Images/RobotInitForm.png>]
+<../../Images/update.png, id=164, 962.59625pt x 746.79pt>
+File: ../../Images/update.png Graphic file (type png)
+<use ../../Images/update.png>
+Package pdftex.def Info: ../../Images/update.png  used on input line 110.
+(pdftex.def)             Requested size: 276.00105pt x 214.1136pt.
+<../../Images/lisrofUpdateFiles.png, id=165, 962.59625pt x 746.79pt>
+File: ../../Images/lisrofUpdateFiles.png Graphic file (type png)
+<use ../../Images/lisrofUpdateFiles.png>
+Package pdftex.def Info: ../../Images/lisrofUpdateFiles.png  used on input line
+ 114.
+(pdftex.def)             Requested size: 276.00105pt x 214.1136pt.
+
+Overfull \hbox (33.5201pt too wide) in paragraph at lines 112--115
+\OT1/cmr/m/n/10 The path to the up-date file on your USB should ap-pear in the 
+$\OML/cmm/m/it/10 UpdatePackageList$\OT1/cmr/m/n/10 . 
+ []
+
+[10 <../../Images/settings.png> <../../Images/update.png>]
+File: ../../Images/RobotInitForm.png Graphic file (type png)
+<use ../../Images/RobotInitForm.png>
+Package pdftex.def Info: ../../Images/RobotInitForm.png  used on input line 123
+.
+(pdftex.def)             Requested size: 276.00105pt x 206.9994pt.
+ [11 <../../Images/lisrofUpdateFiles.png>]
+File: ../../Images/loginScreen.png Graphic file (type png)
+<use ../../Images/loginScreen.png>
+Package pdftex.def Info: ../../Images/loginScreen.png  used on input line 138.
+(pdftex.def)             Requested size: 276.00105pt x 206.9994pt.
+
+Overfull \hbox (1.11063pt too wide) in paragraph at lines 136--139
+[]\OT1/cmr/m/n/10 Open AuboPE by double-clicking the short-cut on the desk-top 
+or by restart-
+ []
+
+[12]
+File: ../../Images/RobotInitForm.png Graphic file (type png)
+<use ../../Images/RobotInitForm.png>
+Package pdftex.def Info: ../../Images/RobotInitForm.png  used on input line 142
+.
+(pdftex.def)             Requested size: 276.00105pt x 206.9994pt.
+File: ../../Images/settings.png Graphic file (type png)
+<use ../../Images/settings.png>
+Package pdftex.def Info: ../../Images/settings.png  used on input line 147.
+(pdftex.def)             Requested size: 276.00105pt x 214.1136pt.
+ [13]
+File: ../../Images/update.png Graphic file (type png)
+<use ../../Images/update.png>
+Package pdftex.def Info: ../../Images/update.png  used on input line 151.
+(pdftex.def)             Requested size: 276.00105pt x 214.1136pt.
+<../../Images/FileImport.png, id=202, 962.59625pt x 746.79pt>
+File: ../../Images/FileImport.png Graphic file (type png)
+<use ../../Images/FileImport.png>
+Package pdftex.def Info: ../../Images/FileImport.png  used on input line 155.
+(pdftex.def)             Requested size: 276.00105pt x 214.1136pt.
+ [14]
+File: ../../Images/loginScreen.png Graphic file (type png)
+<use ../../Images/loginScreen.png>
+Package pdftex.def Info: ../../Images/loginScreen.png  used on input line 170.
+(pdftex.def)             Requested size: 276.00105pt x 206.9994pt.
+
+Overfull \hbox (1.11063pt too wide) in paragraph at lines 168--171
+[]\OT1/cmr/m/n/10 Open AuboPE by double-clicking the short-cut on the desk-top 
+or by restart-
+ []
+
+[15 <../../Images/FileImport.png>]
+File: ../../Images/RobotInitForm.png Graphic file (type png)
+<use ../../Images/RobotInitForm.png>
+Package pdftex.def Info: ../../Images/RobotInitForm.png  used on input line 174
+.
+(pdftex.def)             Requested size: 276.00105pt x 206.9994pt.
+ [16] [17]
+File: ../../Images/systemSettings.png Graphic file (type png)
+<use ../../Images/systemSettings.png>
+Package pdftex.def Info: ../../Images/systemSettings.png  used on input line 20
+7.
+(pdftex.def)             Requested size: 276.00105pt x 194.82834pt.
+<../../Images/TextEntry.png, id=248, 853.1875pt x 484.81125pt>
+File: ../../Images/TextEntry.png Graphic file (type png)
+<use ../../Images/TextEntry.png>
+Package pdftex.def Info: ../../Images/TextEntry.png  used on input line 211.
+(pdftex.def)             Requested size: 276.00105pt x 156.83682pt.
+ [18 <../../Images/TextEntry.png>]
+<../../Images/addingDanishLayout.png, id=258, 399.4925pt x 404.51125pt>
+File: ../../Images/addingDanishLayout.png Graphic file (type png)
+<use ../../Images/addingDanishLayout.png>
+Package pdftex.def Info: ../../Images/addingDanishLayout.png  used on input lin
+e 216.
+(pdftex.def)             Requested size: 276.00105pt x 279.4834pt.
+<../../Images/danishAddedToInputSources.png, id=259, 853.1875pt x 484.81125pt>
+File: ../../Images/danishAddedToInputSources.png Graphic file (type png)
+<use ../../Images/danishAddedToInputSources.png>
+Package pdftex.def Info: ../../Images/danishAddedToInputSources.png  used on in
+put line 221.
+(pdftex.def)             Requested size: 276.00105pt x 156.83682pt.
+
+[19 <../../Images/addingDanishLayout.png>]
+<../../Images/LanguageChange.png, id=270, 616.10175pt x 469.755pt>
+File: ../../Images/LanguageChange.png Graphic file (type png)
+<use ../../Images/LanguageChange.png>
+Package pdftex.def Info: ../../Images/LanguageChange.png  used on input line 22
+6.
+(pdftex.def)             Requested size: 276.00105pt x 210.44164pt.
+ [20 <../../Images/danishAddedToInputSources.png> <../../Images/LanguageChange.
+png>]
+File: ../../Images/loginScreen.png Graphic file (type png)
+<use ../../Images/loginScreen.png>
+Package pdftex.def Info: ../../Images/loginScreen.png  used on input line 264.
+(pdftex.def)             Requested size: 276.00105pt x 206.9994pt.
+
+Overfull \hbox (1.11063pt too wide) in paragraph at lines 262--265
+[]\OT1/cmr/m/n/10 Open AuboPE by double-clicking the short-cut on the desk-top 
+or by restart-
+ []
+
+File: ../../Images/RobotInitForm.png Graphic file (type png)
+<use ../../Images/RobotInitForm.png>
+Package pdftex.def Info: ../../Images/RobotInitForm.png  used on input line 268
+.
+(pdftex.def)             Requested size: 276.00105pt x 206.9994pt.
+[21]
+File: ../../Images/settings.png Graphic file (type png)
+<use ../../Images/settings.png>
+Package pdftex.def Info: ../../Images/settings.png  used on input line 273.
+(pdftex.def)             Requested size: 276.00105pt x 214.1136pt.
+ [22]
+File: ../../Images/update.png Graphic file (type png)
+<use ../../Images/update.png>
+Package pdftex.def Info: ../../Images/update.png  used on input line 277.
+(pdftex.def)             Requested size: 276.00105pt x 214.1136pt.
+<../../Images/FileExport.png, id=294, 962.59625pt x 746.79pt>
+File: ../../Images/FileExport.png Graphic file (type png)
+<use ../../Images/FileExport.png>
+Package pdftex.def Info: ../../Images/FileExport.png  used on input line 281.
+(pdftex.def)             Requested size: 276.00105pt x 214.1136pt.
+ [23]
+Overfull \hbox (39.35077pt too wide) in paragraph at lines 283--284
+[]\OT1/cmr/m/n/10 click $[]\OML/cmm/m/it/10 ScanDevice[]$\OT1/cmr/m/n/10 . The 
+path to your usb should ap-pear in the $\OML/cmm/m/it/10 UpdatePackageList$\OT1
+/cmr/m/n/10 . 
+ []
+
+[24 <../../Images/FileExport.png>] (HBCInstallGuide.aux)
+Package rerunfilecheck Info: File `HBCInstallGuide.out' has not changed.
+(rerunfilecheck)             Checksum: 0262B7CD2C6F36AFFC6AE1F56238EB21;2236.
  ) 
 Here is how much of TeX's memory you used:
- 7276 strings out of 478582
- 116773 string characters out of 2845289
- 401986 words of memory out of 3000000
- 25422 multiletter control sequences out of 15000+600000
- 472899 words of font info for 40 fonts, out of 8000000 for 9000
+ 8463 strings out of 478582
+ 137113 string characters out of 2845289
+ 425883 words of memory out of 3000000
+ 26416 multiletter control sequences out of 15000+600000
+ 473514 words of font info for 42 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 60i,6n,63p,205b,318s stack positions out of 10000i,1000n,20000p,200000b,80000s
+ 60i,7n,63p,422b,433s stack positions out of 10000i,1000n,20000p,200000b,80000s
 <C:/Users/mnj/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cm
-bx12.pfb><C:/Users/mnj/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfont
-s/cm/cmr10.pfb><C:/Users/mnj/AppData/Local/Programs/MiKTeX/fonts/type1/public/a
-msfonts/cm/cmr12.pfb><C:/Users/mnj/AppData/Local/Programs/MiKTeX/fonts/type1/pu
-blic/amsfonts/cm/cmr17.pfb>
-Output written on HBCInstallGuide.pdf (1 page, 44582 bytes).
+bx10.pfb><C:/Users/mnj/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfont
+s/cm/cmbx12.pfb><C:/Users/mnj/AppData/Local/Programs/MiKTeX/fonts/type1/public/
+amsfonts/cm/cmmi10.pfb><C:/Users/mnj/AppData/Local/Programs/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmr10.pfb><C:/Users/mnj/AppData/Local/Programs/MiKTeX/fonts/
+type1/public/amsfonts/cm/cmr12.pfb><C:/Users/mnj/AppData/Local/Programs/MiKTeX/
+fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/mnj/AppData/Local/Programs/M
+iKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
+Output written on HBCInstallGuide.pdf (24 pages, 4908634 bytes).
 PDF statistics:
- 33 PDF objects out of 1000 (max. 8388607)
- 4 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 368 PDF objects out of 1000 (max. 8388607)
+ 132 named destinations out of 1000 (max. 500000)
+ 200 words of extra memory for PDF output out of 10000 (max. 10000000)
 

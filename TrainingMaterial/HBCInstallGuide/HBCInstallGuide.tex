@@ -1,7 +1,9 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \def\MakeUppercaseUnsupportedInPdfStrings{\scshape}
+\usepackage{float}
 \usepackage{hyperref}
+\usepackage{graphicx}
 
 \title{Aubo Guides and Training material}
 \author{Lead Robotics}
@@ -13,105 +15,236 @@
 
 \tableofcontents
 
-
-\section{This document} 
+\section{This document}
 This document is a manual for setting up the Aubo for the WheelRestore System. 
-The steps for a correct installation are. 
-\begin{itemize}
-\item Change keyboard layout (optional)
-\item Set static ip to 192.168.2.41, mask: 255.255.255.0
-\item Update Aubo robot to version 4.5.49, in order to enable TCP control. 
-\item Install the HBCPaint program on the robot, using a backup file
-\item Setup remote access with VNC (optional)
-\end{itemize}
+
+The required steps to setup a robot for wheelrestore are sections \ref{subsec:statIPsysSett} to \ref{subsec:usingBackup}. 
+\begin{enumerate}
+\item Set static IP using system settings
+\item Update Aubo software via USB
+\item Installing Aubo Programs Using Backup File
+\end{enumerate}
+
+The rest of the document is either optional or alternative ways of doing these 3 things. 
 
 You will need a USB with the update software. The USB should also have a backup of the demo-machine, you will use to install the robotprograms, setup modbus etc.
 
 \section{Guide}
-\subsection{Startup}
-\label{subsec:Startup}
-Another description of the startup procedure can be found in the Aubo manual in the section 'Getting Started'.
 
-TLDR: Plug everything in. Turn the switch on the controlbox. Wait until the standby light starts. Then hold the power button on the teachpendant for around 2 seconds. 
-
-After startup the Aubo programming environment (AuboPE) will start automatically. Login with the default password: '1'. Press save, and then startup on the init form page. The manipulator arm should now power on, the brakes will click, and the AuboPE UI should appear.  
-
-step by step:
-\begin{itemize}
-  \item Connect the three cables to the controlbox. Connect the other ends to the manipulater arm, 230VAC power and the teacpendant screen respectively.
-  \item Turn the box on. On the compact box the switch is located right above the power cord plugin. On the large box the breaker is round and jutting out of the front of the box. After turning the switch you should hear the fans start in the box.
-\item Wait for the ‘Standby’ light to turn on with a solid orange light. 
-\item If the Emergency stop light is lit up in red make sure to clear the emergency stop buttons. There is one on the teachpendant and one on the large control box. 
+\subsection{Set static IP using system settings} \label{subsec:statIPsysSett}
+\begin{enumerate}
+\item Connect the three cables to the controlbox. Connect the other ends to the manipulater arm, 230VAC power and the teacpendant screen respectively.
+\item Turn the box on. On the compact box the switch is located right above the power cord plugin. On the large box the breaker is round and jutting out of the front of the box. After turning the switch you should hear the fans start in the box.
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\textwidth]{../../Images/FrontCompactAuboBox.jpg}
+\end{figure}
+\item Wait for the $Standby$ light to turn on with a solid orange light. 
+\item If the Emergency stop light is lit up in red make sure to clear the emergency stop button.
 \item Now get the teachpendant and press and hold the power button in the top-left corner for at least 1s. The button should light up blue.
 \item Wait for the teachpendant to start. 
 \item A guarantee disclaimer might appear, click agree to continue. 
 \item You should now see a login screen and a desktop. 
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\textwidth]{../../Images/loginScreen.png}
+\end{figure}
 \item Close the login screen for now, we will get to the robot program later. 
-\item You should now only see the desktop with 3 shortcuts -> ‘AUBOPE’, ‘Files’ and ‘Terminal’. AUBOPE is the robot software. This will re-open the login screen and get us into the robot programming. Files opens the filesystem. Terminal opens a bash terminal.
-\end{itemize}
+\item You should now only see the desktop with 3 shortcuts: $AUBOPE$, $Files$ and $Terminal$. AUBOPE is the robot software. This will re-open the login screen and get us into the robot programming. Files opens the filesystem. Terminal opens a bash terminal.
+\item Open a terminal, by double tapping the icon. (or plug in a mouse and doubleclick on it)
+\item  We now need to type a terminal command beware if you haven't changed the keyboard layout the $\&$ sign will be on the key press $Shift+7$ as on a US keyboard not on a keypress of $Shift+6$ as with a Danish keyboard. Enter command: $unity\&$ .
+This command will start the unity desktop environment and give you a toolbar on the left side of the screen.
+\item Open system settings either on the toolbar to the left or with the dropdown menu in the topright corner of the screen. The icon is a gear and a wrench. 
+\begin{figure}[H]\centering
+  \includegraphics[width=0.3\textwidth]{../../Images/systemSettingsButton.png}
+\end{figure}
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/systemSettings.png}
+\end{figure}
+\item Doubleclick on network
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/networkWired.png}
+\end{figure}
+\item Select wired. The icon with the ethernet port not the arrows.
+\item click options
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/wireOptionsEthernet.png}
+\end{figure}
+\item Select the IPv4 settings tab
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/IPv4SettingsAutomatic.png}
+\end{figure}
+\item In the Method dropdown bar select $'manual'$ 
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/ipv4SettingsManual.png}
+\end{figure}
+\item Click add and type in IP 192.168.2.41, mask 255.255.255.0 and leave gateway empty. 
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/IPv4SettingsWithAdress.png}
+\end{figure}
+\item Click save. 
+\item Close the settings window and the terminal window.  $x$ is in the top left corner of the windows.
+\end{enumerate}
+The robot should now have a static IP. You can test it by connecting a computer and pinging the robot on its new adress. 
 
-\subsection{Shutdown} 
-Press and hold the power button on the topleft of the teachpendant for at least a second.
 
-The Screen should go black. 
 
-The Robot is ready to start back up when the ‘standby’ light on the control box lights up orange. 
+\subsection{Update Aubo software Via USB}
+\begin{enumerate}
+\item Acquire USB with update software. the software is a compressed file ending in .aubo. 
+\item Plugin the usb. 
+\item Open AuboPE by double-clicking the shortcut on the desktop
+ or by restarting the robot. The login screen should appear.
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\textwidth]{../../Images/loginScreen.png}
+\end{figure}
+\item  Type the password, default is '1' and press login. The $Robot Init Form$ screen should appear
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\textwidth]{../../Images/RobotInitForm.png}
+\end{figure}
+\item Press save and then startup to proceed.If this is the first time the robot has been started after being mounted it will say that the mounting pose has been changed. Click $ok$ and then click $yes$ to confirm that the mounting pose has changed. The robot will now initialize. You should hear the brakes click.  The teachpendant should then show the robot user interface.  
+\item Click on the settings tab at the top. 
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/settings.png}
+\end{figure}
+\item Navigate through the $System$ tab into the $Update$ tab on the bottom left. 
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/update.png}
+\end{figure}
+\item Click on the $'Scan Software Package'$ button in the center of the screen. The path to the update file on your USB should appear in the $Update Package List$.
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/lisrofUpdateFiles.png}
+\end{figure}
+\item Select your desired update file and press $'Update Software'$
+\item A confirmation window will appear. Press $'yes'$ you do want to update.
+\item Wait for the update to finish. This will take about 30 seconds. 
+\item The program will tell you to restart. Click $'ok'$, and then $'yes'$ to shutdown.
+\item Start the robot again with the power button on the teachpendant. The login screen should appear.
+\item  Type the password, default is '1' and press login. The $Robot Init Form$ screen should appear
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\textwidth]{../../Images/RobotInitForm.png}
+\end{figure}
+\item Press save and then startup to proceed.
+\item Go to the about tab and in the top right
+\item Check that the Teachpendant Version has been updated. An updated robot should say: Teachpendant Version: V4.5.49 
+\end{enumerate}
 
-\subsection{Logging in}
-\label{subsec:login}
-After restart the login screen should appear automatically. Otherwise doubleclick on the AUBOPE shortcut on the desktop. Type the password, default is '1' and press login. 
 
-The next screen is called 'Robot Init Form', press save and then startup to proceed. The robot will now go through an initializing. You should hear the brakes click.
+\subsection{Installing Aubo Programs Using Backup File}
+\label{subsec:usingBackup} 
+With backups you can transfer all programs, variables and settings onto a new system. 
+\begin{enumerate}
+\item Acquire USB with backupfile and plug it into the robot.
+\item Open AuboPE by double-clicking the shortcut on the desktop or by restarting the robot. The login screen should appear.
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\textwidth]{../../Images/loginScreen.png}
+\end{figure}
+\item  Type the password, default is '1' and press login. The $Robot Init Form$ screen should appear
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\textwidth]{../../Images/RobotInitForm.png}
+\end{figure}
+\item Press save and then startup to proceed.If this is the first time the robot has been started after being mounted it will say that the mounting pose has been changed. Click $ok$ and then click $yes$ to confirm that the mounting pose has changed. The robot will now initialize. You should hear the brakes click.  The teachpendant should then show the robot user interface.   
+\item Click on the settings tab at the top. 
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/settings.png}
+\end{figure}
+\item Navigate through the $System$ tab into the $Update$ tab on the bottom left. 
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/update.png}
+\end{figure}
+\item Select the $'File Import'$ tab.
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/FileImport.png}
+\end{figure}
+\item Click $Scan Aubo File$. The path to any backup files on your USB should appear in the $Update Package List$
+\item Select the desired backup and press $'File Import'$
+\item Wait a moment for the backup to install. 
+\item Restart the robot. Shutdown the robot by holding down the button on the teachpendant. Wait for the standby light to turn orange. Then press the teachpendant button again to start back up.
+\end{enumerate}
 
-The teachpendant should then show the robot software user interface.  
+\subsection{Tool pickup calibration} 
+Becaus of imprecision in robot calibration, materials for the box or box assembly. The robot might not perform pickup of tools as smoothly as desired without a calibration of the pickup points. This section describes how to change those pickup points. 
+The pickup point is defined as the moment we grab on to a tool. ie the moment we activate/deactivate the air in quickchange or 3D printed hand. 
 
-\subsection{opening system settings}
-\label{subsec:OpenSystemSettings}
-The robot runs on ubuntu 14.04, and there are a number of reasons you might want to access the ubuntu settings. Fx setting up IP's and changing keyboard layout. 
-
+\begin{enumerate}
+\item Open AuboPE by double-clicking the shortcut on the desktop or by restarting the robot using the teachpendant power button. The login screen should appear.
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\textwidth]{../../Images/loginScreen.png}
+\end{figure}
+\item  Type the password, default is '1' and press login. The $Robot Init Form$ screen should appear
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\textwidth]{../../Images/RobotInitForm.png}
+\end{figure}
+\item Press save and then startup to proceed.
+\item Select the programming tab in the top.
+\item Navigate through the $Config$ tab into the $Var Config$ tab on the left.
+\item The variables on the right are the pickup poses of the robot named for the tool they pickup. The exception is connectionLost which is used for something else. 
+\item Go through each tool variable and perform the following procedure. 
 \begin{itemize}
-	\item Startup the robot and close the login screen so you are looking at the desktop
-	\item Open a terminal, by double tapping the icon. (or plug in a mouse and doubleclick on it)
-	\item Enter command: $$'unity\&’$$, beware if you haven't changed the keyboard layout the $$‘\&’$$ sign will be located on $$'shift+7’$$ as on a US keyboard not on $$‘shift+6’$$ as with a Danish keyboard. This command will start the unity desktop environment and give you a toolbar on the left side of the screen.
-	\item Open system settings either on the toolbar to the left or with the dropdown menu in the topright corner of the screen. The icon is a gear and a wrench. 
+\item Select the variable you want to calibrate on the right.
+\item While being careful not to hit anything navigate to the current pickup position by holding the move here button in the button right. If you are about to collide with something let go of the move here button and use the black force control button on the right side of the teachpendant to pull the robot around the obstacle by hand.
+\item When you get close to the pickup point you might have to stop using moveHere as the old pickup position could be wrong. Use the forcecontrol button and pull the robot into a better pickup position.
+\item When you are at the right position press the setPoint button. 
+\item Activate stepMode and move with the arrows to finetune your position.
+\item Press confirm in the bottom right. 
+\item Now press modify to save the changes. Your pickup point should now be modified. 
 \end{itemize}
+\item To test pickup positions go to programming tab in the top. 
+\item Navigate through $Project$ tab on the left into $Load$ tab. 
+\item On the right is a list of programs. The tooltests will be named as $<toolname>Test$ fx UVLightTest. 
+\item select program click load
+\item Make sure to move the robot free of any obstacles into the middle of the box. Also adjust the sliding bar called $move limit$ to reduce the speed the robot moves at. It is recommended to test a new calibration while moving slowly.
+\item If your calibration was good the tool should now be picked up and sat back down without issue. If the pickup is still imprecise repeat the calibration. 
+\end{enumerate}
+
+
+
 
 \subsection{Changing Keyboard Layout}
 The keyboard layout will normally be set to English(US). This might be fine but be aware, if you are using a different keyboard, that some keys might be placed differently. If you want to change the layout continue in this section.
-
-\begin{itemize}
-\item startup and open system settings. See sections \ref{subsec:Startup} and \ref{subsec:OpenSystemSettings}
+\begin{enumerate}
+\item start the robot and navigate to the desktop. If you are in the robot software there is a logout button in the top-right. 
+\item Open a terminal, by double tapping the icon on the desktop. (or plug in a mouse and doubleclick on it)
+\item Enter command: $unity\&$, beware if you haven't changed the keyboard layout the $\&$ sign will be on the key press $Shift+7$ as on a US keyboard not on a keypress of $Shift+6$ as with a Danish keyboard. This command will start the unity desktop environment and give you a toolbar on the left side of the screen.
+\item Open system settings either on the toolbar to the left or with the dropdown menu in the topright corner of the screen. The icon is a gear and a wrench. 
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/systemSettings.png}
+\end{figure}
 \item In system settings open ‘Text Entry’
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/TextEntry.png}
+\end{figure}
 \item Under the list of input sources on the left press the ‘+’ button to add an input source. 
 \item Find your desired layout in the list (fx. Danish). 
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/addingDanishLayout.png}
+\end{figure}
 \item Select your layout and press add. 
 \item The name of your layout should now appear in the list of input sources marked with orange.
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/danishAddedToInputSources.png}
+\end{figure}
 \item Close the Text Entry box.
-\item Go to the top right corner of the screen and click where it says ‘En’ for English. This will open a dropdown menu where you can now select your newly added keyboard layout. 
+\item Go to the top right corner of the screen and click where it says ‘En’ for English. This will open a dropdown menu where you can now select your newly added keyboard layout.
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/LanguageChange.png}
+\end{figure} 
 \item You should now have a different keyboard configuration. Test it by opening a terminal and typing some symbols.
-\end{itemize}
+\end{enumerate}
 
-\subsection{Set static IP}
-There are two main ways to change the static IP. 
+\subsection{Setting up remote Access with VNC and ssh}
+Remote access means as long as you can get access to the local network you can open up the robot screen on your pc and send updates, and logs back and forth. 
 
-You can write changes directly in the file /etc/network/interfaces or you can do it through system settings. 
+\subsubsection{SSH}
+To send files the SCP command is used. To be allowed access a tiny bit of setup is required. 
+mainly you need to set a password. 
+Open a terminal and type the command: $passwd$
+Then type the desired password twice. Note what password you gave the machine. 
 
-It is recommended to do it through system settings. 
+\subsubsection{VNC}
+VNC is what lets us access the screen.
+For this you are going to need access to the internet for the robot. It only does cable connection so get an ethernet cable and plug in your internet. Then follow instructions 
+\href{https://tecadmin.net/setup-x11vnc-server-on-ubuntu-linuxmint/}{here}.
 
-\subsubsection{Using System Settings}
-\begin{itemize}
-\item Start robot and open system settings (see \ref{subsec:Startup} and \ref{subsec:OpenSystemSettings})
-\item Doubleclick on network
-\item Select wired. The icon with the ethernet port not the arrows.
-\item click options
-\item Select the IPv4 settings tab
-\item In the Method dropdown bar select $'manual'$ 
-\item Click add and type in your desired IP, mask and gateway. 
-\item Click save. 
-\end{itemize}
-The robot should now have a static IP. You can test it by connecting a computer and pinging the robot on its new adress. 
-
-\subsubsection{Using interfaces file}
+\subsection{Change IP using interfaces file}
 Open a terminal and type the command $ifconfig$. 
 This will list your connection. Find the name of your ethernet connection fx. $'eth3'$ and write out the ethernet specifications. An example could be. 
 \#eth3
@@ -125,61 +258,37 @@ navigate to /etc/network/interfaces, and open it with a text editor.
 add your specification at the bottom of the file.
 Now either restart the network config, or the entire system.
 
-\subsection{update}
-There are two ways of doing this. Automatically through AuboPE or manually.
-It is recomended to do it automatically. 
-Check out the guides \href{https://drive.google.com/drive/folders/1e2sAyCd5S1s4jH7FRyMwZzTy7VTZb2NE}{here}. For more info. 
-
-\subsubsection{Update via USB}
-\begin{itemize}
-\item Acquire USB with update software. the software is a compressed file ending in .aubo. 
-\item plugin the usb. 
-\item Startup and login to the aubo robot. See \ref{subsec:Startup} and \ref{subsec:login} 
-\item Click on the settings tab at the top. 
-\item select $'system'$ in the bottom left. 
-\item Select update on the left. 
-\item Click on the scan Software Package button in the center of the screen. the names of the update files on your USB should appear in the list.
-\item Select your desired update file and press $'Update Software'$
-\item A confirmation window will appear. Press $'yes'$ you do want to update.
-\item Wait for the update to finish. This will take about 30 seconds. 
-\item The program will tell you to restart. Click $'ok'$, and then $'yes'$ to shutdown.
-\item Start the robot back up
-\item The robot might have switched language. Dont panic. The program is still the same the text is just different. 
-\item login. 
-\item if the language is different go to settings and then to system. Use the previous screenshots in the guide to locate the buttons. The screen shows a sphere made of flags. Use the dropdown menu to change languages.
-\item Go to the about tab and in the top right
-\item Check that the Teachpendant Version has been updated. 
-\end{itemize}
-
-\subsection{Using Backups} 
-With backups you can transfer all programs, variables and settings onto a new system. This 
-
-\subsubsection{Creating a Backup}
-\begin{itemize}
+\subsection{Creating a Backup}
+\begin{enumerate}
 \item plugin a usb. 
-\item Startup and login to the aubo robot. See \ref{subsec:Startup} and \ref{subsec:login}
-\item Go to the settings tab.
-\item open the system tab on the left
-\item Select update on the left
-\item select the file export tab. 
-\item click $'Scan Device'$. Your usb should appear n the list. 
+\item Open AuboPE by double-clicking the shortcut on the desktop or by restarting the robot. The login screen should appear.
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\textwidth]{../../Images/loginScreen.png}
+\end{figure}
+\item  Type the password, default is '1' and press login. The $Robot Init Form$ screen should appear
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\textwidth]{../../Images/RobotInitForm.png}
+\end{figure}
+\item Press save and then startup to proceed.If this is the first time the robot has been started after being mounted it will say that the mounting pose has been changed. Click $ok$ and then click $yes$ to confirm that the mounting pose has changed. The robot will now initialize. You should hear the brakes click.  The teachpendant should then show the robot user interface. 
+\item Click on the settings tab at the top. 
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/settings.png}
+\end{figure}
+\item Navigate through the $System$ tab into the $Update$ tab on the bottom left. 
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/update.png}
+\end{figure}
+\item select the $'File Export'$ tab. 
+\begin{figure}[H]\centering
+  \includegraphics[width=0.8\textwidth]{../../Images/FileExport.png}
+\end{figure}
+\item click $'Scan Device'$. The path to your usb should appear in the $Update Package List$. 
 \item Select your USB and then press $'File Export'$
-\end{itemize}
+\end{enumerate}
 
-\subsubsection{Using a Backup}
-\begin{itemize}
-\item Acquire backupfile. Either from earlier or from a different machine you want to duplicate.
-\item Move file to USB and plug USB into the robot.
-\item Startup and login to the aubo robot. See \ref{subsec:Startup} and \ref{subsec:login}
-\item Go to the settings tab.
-\item open the system tab on the left
-\item Select update on the left
-\item Select the $'File Import'$ tab.
-\item Click $Scan Aubo File$ and a list of the backup files on your USB should appear. 
-\item Select the desired backup and press $'File Import'$
-\item wait a moment for the backup to install. 
-\item restart system. 
-\item Check that your programs, variables, etc have been properly created.
-\end{itemize}
+
+\subsection{Update manually}
+Check out the guides \href{https://drive.google.com/drive/folders/1e2sAyCd5S1s4jH7FRyMwZzTy7VTZb2NE}{here}. For more info. 
+ 
 
 \end{document}

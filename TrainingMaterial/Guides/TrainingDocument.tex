@@ -2,6 +2,7 @@
 \usepackage[utf8]{inputenc}
 \def\MakeUppercaseUnsupportedInPdfStrings{\scshape}
 \usepackage{hyperref}
+\usepackage{graphicx}
 
 \title{Aubo Guides and Training material}
 \author{Lead Robotics}
@@ -35,6 +36,9 @@ For another
 \begin{itemize}
   \item Connect the three cables to the controlbox. Connect the other ends to the manipulater arm, 230VAC power and the teacpendant screen respectively.
   \item Turn the box on. On the compact box the switch is located right above the power cord plugin. On the large box the breaker is round and jutting out of the front of the box. After turning the switch you should hear the fans start in the box.
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/FrontCompactAuboBox.jpg}}
+\end{center}
 \item Wait for the ‘Standby’ light to turn on with a solid orange light. 
 \item If the Emergency stop light is lit up in red make sure to clear the emergency stop buttons. There is one on the teachpendant and one on the large control box. 
 \item Now get the teachpendant and press and hold the power button in the top-left corner for at least 1s. The button should light up blue.
@@ -178,7 +182,7 @@ The robot runs on ubuntu 14.04, and there are a number of reasons you might want
 \begin{itemize}
 	\item Startup the robot and close the login screen so you are looking at the desktop
 	\item Open a terminal, by double tapping the icon. (or plug in a mouse and doubleclick on it)
-	\item Enter command: $$'unity\&’$$, beware if you haven't changed the keyboard layout the $$‘\&’$$ sign will be located on $$'shift+7’$$ as on a US keyboard not on $$‘shift+6’$$ as with a Danish keyboard. This command will start the unity desktop environment and give you a toolbar on the left side of the screen.
+	\item Enter command:$'unity\&’$, beware if you haven't changed the keyboard layout the $‘\&’$ sign will be located on $'shift+7’$ as on a US keyboard not on $‘shift+6’$ as with a Danish keyboard. This command will start the unity desktop environment and give you a toolbar on the left side of the screen.
 	\item Open system settings either on the toolbar to the left or with the dropdown menu in the topright corner of the screen. The icon is a gear and a wrench. 
 \end{itemize}
 
@@ -187,13 +191,28 @@ The keyboard layout will normally be set to English(US). This might be fine but 
 
 \begin{itemize}
 \item startup and open system settings. See sections \ref{subsec:Startup} and \ref{subsec:OpenSystemSettings}
-\item In system settings open ‘Text Entry’
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/systemSettings.png}}
+\end{center}
+\item In system settings open $‘Text Entry’$
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/TextEntry.png}}
+\end{center}
 \item Under the list of input sources on the left press the ‘+’ button to add an input source. 
 \item Find your desired layout in the list (fx. Danish). 
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/addingDanishLayout.png}}
+\end{center}
 \item Select your layout and press add. 
 \item The name of your layout should now appear in the list of input sources marked with orange.
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/danishAddedToInputSources.png}}
+\end{center}
 \item Close the Text Entry box.
-\item Go to the top right corner of the screen and click where it says ‘En’ for English. This will open a dropdown menu where you can now select your newly added keyboard layout. 
+\item Go to the top right corner of the screen and click where it says ‘En’ for English. This will open a dropdown menu where you can now select your newly added keyboard layout.
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/LanguageChange.png}}
+\end{center} 
 \item You should now have a different keyboard configuration. Test it by opening a terminal and typing some symbols.
 \end{itemize}
 
@@ -207,12 +226,31 @@ I recommend doing it through system settings.
 \subsubsection{Using System Settings}
 \begin{itemize}
 \item Start robot and open system settings (see \ref{subsec:Startup} and \ref{subsec:OpenSystemSettings})
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/systemSettings.png}}
+\end{center}
 \item Doubleclick on network
+
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/networkWired.png}}
+\end{center}
 \item Select wired. The icon with the ethernet port not the arrows.
 \item click options
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/wireOptionsEthernet.png}}
+\end{center}
 \item Select the IPv4 settings tab
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/IPv4SettingsAutomatic.png}}
+\end{center}
 \item In the Method dropdown bar select $'manual'$ 
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/ipv4SettingsManual.png}}
+\end{center}
 \item Click add and type in your desired IP, mask and gateway. 
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/IPv4SettingsWithAdress.png}}
+\end{center}
 \item Click save. 
 \end{itemize}
 The robot should now have a static IP. You can test it by connecting a computer and pinging the robot on its new adress. 
@@ -237,12 +275,24 @@ Check out the guides \href{https://drive.google.com/drive/folders/1e2sAyCd5S1s4j
 \subsubsection{Update via USB}
 \begin{itemize}
 \item Acquire USB with update software. the software is a compressed file ending in .aubo. 
-\item plugin the usb. 
+\item Plugin the usb. 
 \item Startup and login to the aubo robot. See \ref{subsec:Startup} and \ref{subsec:login} 
 \item Click on the settings tab at the top. 
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/settings.png}}
+\end{center}
 \item select $'system'$ in the bottom left. 
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/settingsSystem.png}}
+\end{center}
 \item Select update on the left. 
-\item Click on the scan Software Package button in the center of the screen. the names of the update files on your USB should appear in the list.
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/update.png}}
+\end{center}
+\item Click on the $'Scan Software Package'$ button in the center of the screen. the names of the update files on your USB should appear in the list.
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/lisrofUpdateFiles.png}}
+\end{center}
 \item Select your desired update file and press $'Update Software'$
 \item A confirmation window will appear. Press $'yes'$ you do want to update.
 \item Wait for the update to finish. This will take about 30 seconds. 
@@ -262,10 +312,22 @@ With backups you can transfer all programs, variables and settings onto a new sy
 \begin{itemize}
 \item plugin a usb. 
 \item Startup and login to the aubo robot. See \ref{subsec:Startup} and \ref{subsec:login}
-\item Go to the settings tab.
-\item open the system tab on the left
-\item Select update on the left
-\item select the file export tab. 
+\item Go to the $'Settings'$ tab.
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/settings.png}}
+\end{center}
+\item open the $'System'$ tab on the left
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/settingsSystem.png}}
+\end{center}
+\item Select $'update'$ on the left
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/update.png}}
+\end{center}
+\item select the $'File Export'$ tab. 
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/FileExport.png}}
+\end{center}
 \item click $'Scan Device'$. Your usb should appear n the list. 
 \item Select your USB and then press $'File Export'$
 \end{itemize}
@@ -275,14 +337,26 @@ With backups you can transfer all programs, variables and settings onto a new sy
 \item Acquire backupfile. Either from earlier or from a different machine you want to duplicate.
 \item Move file to USB and plug USB into the robot.
 \item Startup and login to the aubo robot. See \ref{subsec:Startup} and \ref{subsec:login}
-\item Go to the settings tab.
-\item open the system tab on the left
-\item Select update on the left
+\item Go to the $'Settings'$ tab.
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/settings.png}}
+\end{center}
+\item open the $'System'$ tab on the left
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/settingsSystem.png}}
+\end{center}
+\item Select $'Update'$ on the left
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/update.png}}
+\end{center}
 \item Select the $'File Import'$ tab.
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=\textwidth]{../../Images/FileImport.png}}
+\end{center}
 \item Click $Scan Aubo File$ and a list of the backup files on your USB should appear. 
 \item Select the desired backup and press $'File Import'$
-\item wait a moment for the backup to install. 
-\item restart system. 
+\item Wait a moment for the backup to install. 
+\item Restart system. 
 \item Check that your programs, variables, etc have been properly created.
 \end{itemize}
 
