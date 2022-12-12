@@ -1,0 +1,143 @@
+--Fake library
+
+
+function init_global_move_profile()
+    print("init_global_move_profile")
+end
+
+function set_relative_offset(position, rotation)
+    print("set_relative_offset: ", position[1], position[2], position[3], rotation[1],rotation[2], rotation[3], rotation[4])
+end
+
+function set_robot_collision_class(lvl)
+    print("set_robot_collision_class", print(lvl))
+end
+
+function set_blend_radius(radius)
+    print("set_blend_radius: ", radius)
+end
+
+function rpy2quaternion(xrz)
+    print("rpy2quaternion: ", "x", xrz[1], "y", xrz[2], "z", xrz[3])
+    return({1,xrz[1], xrz[2], xrz[3]})
+end
+
+function d2r(d)
+    return (d/180)* 3.14159
+end
+
+function atan2(y, x)
+    return math.atan(y,x)
+end
+
+function set_joint_maxacc(jointMaxAccArray)
+    print("set_joint_maxacc: ", jointMaxAccArray[1], jointMaxAccArray[2], jointMaxAccArray[3], jointMaxAccArray[4], jointMaxAccArray[5], jointMaxAccArray[6])
+end
+
+function set_joint_maxvelc(jointMaxVelArray)
+    print("set_joint_maxvelc: ", jointMaxVelArray[1], jointMaxVelArray[2], jointMaxVelArray[3], jointMaxVelArray[4], jointMaxVelArray[5], jointMaxVelArray[6])
+end
+
+function set_end_maxacc(jointMaxTcpAcc)
+    print("set_end_maxacc: ", jointMaxTcpAcc)
+end
+
+function set_end_maxvelc(jointMaxTcpVel)
+    print("set_end_maxvelc: ", jointMaxTcpVel)
+end
+
+function get_tool_kinematics_param(name)
+    print("get_tool_kinematics_param: ", name)
+    local pos = {0,0.1,0.2}
+    local ori = {1,0,0,0}
+    return pos, ori
+end
+
+function get_target_pose(newPos, newOri, endRotBool, toolKin, toolDyn, coordParam) 
+    print("get_target_pose")
+    assert(newPos, "newPos assertion failed")
+    assert(newOri, "newOri assertion failed")
+    assert(endRotBool==false, "endRotBool assertion failed")
+    assert(toolKin, "toolKin assertion failed")
+    assert(toolDyn, "toolDyn assertion failed")
+    --assert(coordParam, "coordParam assertion failed")
+    return({newPos[1], newPos[2], newPos[3], newOri[2], newOri[3], newOri[4]})
+end
+
+function get_user_coord_param(name)
+    print("get_user_coord_param: ", name)
+    return(name)
+end
+
+function move_joint(pose, block)
+    print("move_joint: ", pose[1], pose[2], pose[3], pose[4], pose[5], pose[6])
+    assert(block, "Assertion failed. Block")
+end
+
+function move_line(pose, block)
+    print("move_line: ", pose[1], pose[2], pose[3], pose[4], pose[5], pose[6])
+    assert(block, "Assertion failed. Block")
+end
+
+function move_track(type, block)
+    print("move_track: ", type)
+    assert(block, "Assertion failed. Block")
+end
+
+function add_waypoint(pose)
+    print("add_waypoint: ", pose[1], pose[2], pose[3], pose[4], pose[5], pose[6])
+end
+
+function clear_global_waypoint_list()
+    print("clear_global_waypoint_list")
+end
+
+function set_robot_io_status(ioType, name, signal)
+    print("set_robot_io_status", ioType, name, signal)
+end
+
+function get_current_waypoint()
+    jointstuff = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6}
+return {joint = jointstuff}
+end
+
+function popup_message(x,errorMessage,z)
+    print(errorMessage)
+end
+
+function sleep(n)
+    print("Sleeping my day away for: " .. tostring(n))
+end
+
+function sqrt(n)
+    return math.sqrt(n)
+end
+
+MoveTrackType = {
+Arc=1,
+Cir=2,
+ArcWithOriRot=3,
+CirWithOriRot=4,
+CARTESIAN_MOVEP=5,
+JOINT_GNUBSPLINEINTP=6,
+CARTESIAN_GNUBSPLINEINTP=7
+}
+
+RobotIOType = {
+    RobotBoardControllerDI=1,
+    RobotBoardControllerDO=2,
+    RobotBoardControllerAI=3,
+    RobotBoardControllerAO=4,
+    RobotBoardUserDI=5,
+    RobotBoardUserDO=6,
+    RobotBoardUserAI=7,
+    RobotBoardUserAO=8,
+    RobotToolDI=9,
+    RobotToolDO=10,
+    RobotToolAI=11,
+    RobotToolAO=12
+    }
+
+function get_modbus_io_status(name)
+    return 0
+end

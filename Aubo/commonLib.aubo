@@ -419,7 +419,7 @@ gIsMoving = false
 gSpeedSettings = {}
 gSpeedSettings["slow"] = {{0.5, 0.5, 0.5, 0.5, 0.5 ,0.5}, {0.1, 0.1, 0.1, 0.2, 0.2, 0.2}, 0.4, 0.08}
 gSpeedSettings["medium"] = {{1, 1, 1, 1, 1 ,1}, {0.5, 0.5, 0.5, 0.8, 0.8, 0.8}, 2, 0.4}
-gSpeedSettings["fast"] = {{4, 4, 4, 4, 4 ,4}, {2, 2, 2, 3, 3, 3}, 6, 1}
+gSpeedSettings["fast"] = {{4, 4, 4, 4, 4 ,4}, {3, 3, 3, 4, 4, 4}, 6, 1}
 
 function moveJoint(joint, block, speed)
     setSpeed(speed)
@@ -660,6 +660,17 @@ function dot(point1, point2)
         sum = sum + point1[i]*point2[i]
     end
     return sum
+end
+
+function vectorAdd(vec1, vec2)
+    if (not (#vec1 == #vec2)) then
+        popup_message(0, "Error. Vectors are of different length in vectorAdd", false)
+    end
+    local vec3 = {}
+    for i=1, #vec1 do
+        table.insert(vec3, vec1[i]+vec2[i])
+    end
+    return vec3
 end
 
 function checkMatrix(mat) -- returns true if matrix is valid.
