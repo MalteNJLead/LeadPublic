@@ -305,6 +305,17 @@ Check out the guides \href{https://drive.google.com/drive/folders/1e2sAyCd5S1s4j
 \item Check that the Teachpendant Version has been updated. 
 \end{itemize}
 
+\subsubsection{Update Script via file system}
+
+It is possible to write lua scripts offline and then transfer them to the robot. From the script menu in the robot you can read any lua file with the file ending $.aubo$ that is placed in the folder: $/root/AuboRobotWorkSpace/teachpendant/share/teachpendant/script/$. The simplest way to do this is to upload your file to a usb stick, plug it into the robot and then move it into the correct folder. 
+Alternatively you can use an SCP command. This requires a known IP on the robot, so I would recommend setting a static IP if you are doing it repeatedly. You will also need the pc with your file on it to be on the same subnet mask, IE the first three numbers of the two IP's must be identical, fx $192.168.2.50$ on the pc and $192.168.2.41$ on the robot.  
+From a windows pc the command should look like this
+$scp -P 8822 C:/projects/LeadPublic/Aubo/commonLib.aubo C:/projects/HBCPaint/errorList.aubo C:/projects/HBCPaint/HBCPaint.aubo C:/projects/HBCPaint/HBCPaintNodes.aubo root@192.168.2.41:/root/AuboRobotWorkSpace/teachpendant/share/teachpendant/script/$
+Here I am moving 3 files for the HBC projects into a robot using port 8822. 
+You will be asked for a password after transfer. The default password is $user$. To change it use the $passwd$ command.
+
+
+
 \subsection{Using Backups} 
 With backups you can transfer all programs, variables and settings onto a new system. 
 
