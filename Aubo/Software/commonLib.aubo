@@ -612,7 +612,7 @@ function savePose(name)
     file:close()
 end
 
-function movePath(endNode, onEachMove) --move along path to node with name: endNode. execute onEachMove before each move
+function movePath(endNode, onEachMove) --move along path to node with name: endNode. execute onEachMove function before each move
     if gSimulation then
         gCurrentNode = gNodes[endNode][1]
         return
