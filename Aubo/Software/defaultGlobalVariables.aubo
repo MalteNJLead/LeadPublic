@@ -1,0 +1,113 @@
+--[[
+This document contains some variables commonly used in commonLib.
+New variables can either be added here, or in the mainprogram. 
+If this document is changed it is recomended to rename it to avoid confusion.  
+
+Remember to include this document in your project by using the lua 'require' command. 
+    package.path = package.path .. ";/root/AuboRobotWorkSpace/teachpendant/share/teachpendant/script/?.aubo"
+    require("commonLib")
+The path assume the library is saved in the 'script' folder on the robot. If it is in an alternate location adjust the path accordingly. 
+
+]]
+
+print("\nLoading defaultGlobalVariables \n")
+gSimulation = false
+
+----------------- Speedsettings for integration with commonLib ----------------------
+--[[ 
+Add additonal speedsettings for integration with commonLibFunctions.
+format: {jointAccelerationTable, jointVelocityTable, TCPAcceleration, TCPVelocity}.
+The Acceleration- and VelocityTables are structured as lists with length 6 with a value fom each joint going from base to tool. 
+Units for Joint movements are radians/second and for TCP movement are metres/second 
+--]]
+
+gIsMoving = false
+gSpeedSettings = {}
+gSpeedSettings["slow"] = {jointAcc = {0.5, 0.5, 0.5, 0.5, 0.5 ,0.5}, jointVel = {0.1, 0.1, 0.1, 0.2, 0.2, 0.2}, TCPAcc = 0.4, TCPVel = 0.08}
+gSpeedSettings["medium"] = {jointAcc = {1, 1, 1, 1, 1 ,1}, jointVel = {0.5, 0.5, 0.5, 0.8, 0.8, 0.8}, TCPAcc = 2, TCPVel = 0.4}
+gSpeedSettings["fast"] = {jointAcc = {4, 4, 4, 4, 4 ,4}, jointVel = {3, 3, 3, 4, 4, 4}, TCPAcc = 6, TCPVel = 1}
+
+
+--------------------------------- Tools -----------------------------------------
+--[[
+    gTools contains value about tool kinematics and tool dynamics. 
+    Its a table with two keys: "kin" and "dyn". Kin contains kinematics and dyn kontains dynamic
+    format of kin is {{x, y, z}, {rotW, rotX, rotY, rotZ}}, x, y, z is cartesian offset between flange and tool TCP. 
+    rotW, rotX, rotY, rotZ is a quaternion offset between flange and tool TCP. Check the scripting manual for built in functions that can convert between 
+    quaternions and euler angles or between degrees and radians.
+--]]
+
+gCurrentTool = "flange"
+gTools = {}
+gTools["flange"] = {pos = {0,0,0}, ori = {1,0,0,0}, weight = 0, centerOfMass = {0,0,0}}
+gTools["sprayGun"] = {pos = {0.055, 0.00, 0.300}, ori = rpy2quaternion({0.0000, 0.0000, d2r(45)}), weight = 0.5, centerOfMass = {0,0,0.10}}
+
+
+--------------------------------- Offsets -----------------------------------------
+--[[
+    gOffsets contains a list of organized offsets for use with commonLib functions such as setOffset and the Nodes system. 
+    Format: {{x,y,x}, {rotW, rotX, rotY, rotZ}, toolReference}
+    If a toolreference is specified the offset will be in relation to that tool. If no tool is given the base coordinatesystem is used as reference
+    Units are metres for x, y, z and RotW, rotX, RotY, rotZ describe a quaternion. Check the scripting manual for built in functions that can convert between 
+    quaternions and euler angles or between degrees and radians.
+--]]
+
+gOffsets = {}			--(state, offsetPos, offsetOri, toolname)
+
+gOffsets["none"] = {pos = {0,0,0}, ori = {1,0,0,0}, tool ="flange"}
+gOffsets["spray"] = {pos = {0,0,0}, ori = {1,0,0,0}}
+
+
+--------------------------------- Nodes -----------------------------------------
+--[[
+    gNodes contains the positional nodes used in movePath. Each node has a name, which is a key in gNodes. Each node is in turn a dictionary with  
+    the format: {pose, connections, offset}
+    Pose is a table with 6values describing the rotation of each joint in radians from base to tool. 
+    Connections is a list of the nodes that you can move directly to from the current node.
+        The format of a reachable node is: {node, type, speed, tools}
+        node: is the name of the node that you can move to. 
+        type is a string, either "joint" or "line". It describes the movement type to be used. 
+        listOfAllowedToolKeys is a way to restrict movements based on which tool is equipped. List all the toolkeys for which the movement is allowed.
+    Offset, is a key in gOffsets. The actual position of the node will be the jointPose modified with the offset.  
+--]]
+
+
+gCurrentNode = "unknown"
+gNodes = {}
+
+gNodes["idle"] =
+{
+    pose = {1.447213, 1.182767, -0.502457, 0.826917, 0.013828, 1.951175},
+    connections = {
+        {node = "idleApproach", type = "joint", speed = "fast", tools = {"none", "sprayTool"}},
+    },
+}
+
+gNodes["sprayApproach"] = --name of position
+{
+    pose = {1.608089, 0.839784, -0.949678, 0.726225, 0.130123, 1.837565},
+    connections = {
+        {node = "idle", type = "joint", speed = "medium", tools = {"none", "sprayTool"}},
+        {node = "sprayStart", type = "joint", speed = "paint", tools = {"none", "sprayTool"}},
+    }
+}
+
+gNodes["sprayStart"] =
+{
+    pose = "variable",
+    connections = {
+        {node = "sprayEnd", type = "line", speed = "paint", tools = {"none", "sprayTool"}},
+        {node = "sprayApproach", type = "line", speed = "medium", tools = {"none", "sprayTool"}}
+    },
+    offset = "spray"
+}
+
+gNodes["sprayEnd"] =
+{
+    pose = "variable",
+    connections = {
+        {node = "sprayStart", type = "line", speed = "paint", tools = {"none", "sprayTool"}},
+        {node = "sprayApproach", type = "line", speed = "medium", tools = {"none", "sprayTool"}}
+    },
+    offset = "spray"
+}
