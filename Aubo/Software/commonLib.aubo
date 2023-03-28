@@ -552,44 +552,28 @@ function searchTree(target)
 		popup_message(0, "Error. Unknown target position in searchTree", false)
 		return
 	end
-    local queue = {} -- ordered queue of connections to move through
-    local nodeName, connection, toolOptions, knownNodes
-    for i, currentConnection in ipairs(gNodes[gCurrentNode]["connections"]) do
-        if (hasValue(currentConnection["tools"], gCurrentTool)) then
-            checkConnectionValid(currentConnection)
-            table.insert(queue, currentConnection)
-		end
-    end
-    if next(queue) == nil then
-        popup_message(0, "Error. No path found from current node: " .. tostring(gCurrentNode) .. " with tool: " .. tostring(gCurrentTool), false)
-    end
-    local previousVisits = {gCurrentNode}
-    while not (queue[1][#queue[1]][1] == target) do -- If last node of the connection matches the target we have found a valid connection.
-        nodeName = queue[1][#queue[1]][1]
-        knownNodes = Set(previousVisits)
-        if (not knownNodes[nodeName]) then
-            --print("nodeName: " .. nodeName)
-            for i, currentPath in ipairs(gNodes[nodeName][2]) do
-			checkConnectionValid(currentPath)
-                toolOptions = Set(currentPath[4])
-                if (toolOptions[gCurrentTool]) then
-                    connection = {}
-                    connection = deepCopy(queue[1])
-                    table.insert(connection, {currentPath[1], currentPath[2], currentPath[3]}) --create connection with additional node.
-                    table.insert(queue, deepCopy(connection)) -- insert amended path at the back of the queue.
-                end
+    local allPaths = {{{node = gCurrentNode}}} -- ordered table of all paths the robot could move along. Initialized with one path of length one which is where we are. 
+    local previousVisits = {}
+    local endNode
+    while not (allPaths[1][#allPaths[1]]["node"] == target) do
+        endNode = allPaths[1][#allPaths[1]]["node"]
+        for i, additionalConnection in ipairs(gNodes[endNode]["connections"]) do
+            checkConnectionValid(additionalConnection)
+            if hasValue(additionalConnection["tools"], gCurrentTool) and (not hasValue(previousVisits, addtionalConnection["node"])) then
+                local newPath = deepCopy(allPaths[1])
+                table.insert(newPath, additionalConnection) -- Create new path with the addtional connection.
+                table.insert(allPaths, newPath) -- insert amended path at the back of the allPaths.
             end
         end
-        table.remove(queue, 1) --remove the path we were looking at
-        table.insert(previousVisits, nodeName)
-		local next = next
-        if next(queue) == nil then
+        table.remove(allPaths, 1) --remove the path we were looking at
+        table.insert(previousVisits, endNode)
+        if next(allPaths) == nil then
             popup_message(0, "Error. No path found in searchTree from " .. gCurrentNode .. " to " .. target, false)
         end
     end
     print("Found path to " .. target)
-    printTable(queue[1])
-    return deepCopy(queue[1]) -- return the path in format {{nodeName1, movetype1, speed1}, {nodeName2, movetype2, speed2}, ...}
+    printTable(allPaths[1])
+    return allPaths[1] -- return the path in format {{nodeName1, movetype1, speed1}, {nodeName2, movetype2, speed2}, ...}
 end
 
 function resetPoseLog()
@@ -608,12 +592,12 @@ function savePose(name)
     local currentPose = waypoint.joint
     local currentPos = waypoint.pos
     local str = tostring(name) .. " -> \nFixedJoints("
-    str = str .. (tostring(gNodes[name][1][1]) .. ", "..
-    tostring(gNodes[name][1][2]) .. ", "..
-    tostring(gNodes[name][1][3]) .. ", "..
-    tostring(gNodes[name][1][4]) .. ", "..
-    tostring(gNodes[name][1][5]) .. ", "..
-    tostring(gNodes[name][1][6]))
+    str = str .. (tostring(gNodes[name]["pose"][1]) .. ", "..
+    tostring(gNodes[name]["pose"][2]) .. ", "..
+    tostring(gNodes[name]["pose"][3]) .. ", "..
+    tostring(gNodes[name]["pose"][4]) .. ", "..
+    tostring(gNodes[name]["pose"][5]) .. ", "..
+    tostring(gNodes[name]["pose"][6]))
     str = str .. ")\nActualJoints("
     str = str .. (tostring(currentPose["j1"]) .. ", "..
         tostring(currentPose["j2"]) .. ", "..
@@ -628,43 +612,42 @@ function savePose(name)
 end
 
 function movePath(endNode, onEachMove)
-    --move along path defined in gNodes to node with key: 'endNode'. Execute the function onEachMove before each move.
+    --move along path defined in gNodes to 'endNode'. Execute the function onEachMove before each move.
     if gSimulation then
-        gCurrentNode = gNodes[endNode][1]
+        gCurrentNode = endNode
         return
     end
-	local currentNodePose = gNodes[gCurrentNode][1]
+    
     --[[Midlertidigt suspenderet ventende på en udvidning af checkpose så den medregner et offset. 
+	local currentNodePose = gNodes[gCurrentNode]["pose"]
     if not checkPose(currentNodePose, 0.2) then
         popup_message(0, "Error. Robot not at currentNode pose in movePath", false)
         return
     end
     ]]
     local path = searchTree(endNode)
-    if path == "alreadyAtPosition" then
+    if (path == "alreadyAtPosition") then
         return
     end
-    for i, node in ipairs(path) do
-        print("Moving " .. node[2] .. "wise to " .. node[1] .." with speed " .. node[3])
+    for i, connection in ipairs(path) do
+        print("Moving " .. connection["type"] .. "wise to " .. connection["node"] .." with speed " .. connection["speed"])
 	    init_global_move_profile()
         if onEachMove~= nil and onEachMove() == "cancel" then
             return "cancel"
         end
-        if (gNodes[node[1]][1] == "variable") or (gNodes[node[1]][1] == nil) then
-            popup_message(0, "Error. No pose found for node: " .. node[1] .. " in movePath.", false)
+        if (gNodes[connection["node"]]["pose"] == "variable") or (gNodes[connection["node"]]["pose"] == nil) then
+            popup_message(0, "Error. No pose found for connection: " .. connection["node"] .. " in movePath.", false)
         end
-        if gNodes[node[1]][3] == "none" then
-            move(gNodes[node[1]][1], node[2], node[3], true)
-            savePose(node[1])
-        elseif gOffsets[gNodes[node[1]][3]] == nil then
-			popup_message(0, "Error. No offfset reference found in movePath", false)
+        if (gNodes[connection["node"]]["offset"] == "none") or (gNodes[connection["node"]]["offset"] == nil) then
+            move(gNodes[connection["node"]]["pose"], connection["type"], connection["speed"], true)
+            savePose(connection["node"])
 		else
-            setOffset(gNodes[node[1]][3])
-            move(gNodes[node[1]][1], node[2], node[3], true)
-            savePose(node[1])
+            setOffset(gNodes[connection["node"]]["offset"])
+            move(gNodes[connection["node"]]["pose"], connection["type"], connection["speed"], true)
+            savePose(connection["node"])
             init_global_move_profile()
         end
-        gCurrentNode = node[1]
+        gCurrentNode = connection["node"]
     end
 end
 
