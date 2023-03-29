@@ -1,0 +1,275 @@
+print("\nLoading globalDefines.aubo \n")
+gSidewaysPickup = true
+gCheckPalletPresenceDisabled = true
+gCheckAllPicks = true
+gProductSensorDisabled = true
+gVacuumCheckDisabled = false
+gLastLoadedPose = {getCurrentJoints(), "programStart"}
+gSheetsAlreadyPlaced = {{false, false, false, false, false, false}, {false, false, false, false, false, false}}
+gSheetSettingsFromInterface = true
+gStaticRefPallet1 = {1.523985, -0.382388, 1.818210, 0.649124, 1.521205, -1.020192}
+gStaticRefPallet2 = {-1.523985, -0.382388, 1.818210, 0.649124, 1.521205, -1.020192}
+
+gLiftUpLayerPredefines = {Berry_5225 = 2, Berry_5222 = 3, Berry_5202 = 2, Berry}
+
+-- Pickup and DropOff Sequences. Names are key-entries into gLoadPatternParameters.
+-- Unless otherwise specified the reference points will be the previous point in the list. In other words the ordering of the list matters.
+
+
+gPrePickupSequence = {{"productPickupRightOffAndOver", "joint"}, {"productPickupRightOff", "line"}, {"productPickup", "line"}}
+gPostPickupSequence = {{"productPickupOver", "line"}}
+gPrePlaceSequence = {{"productDropOffMoveOut", "joint"}, {"productPreApproach", "joint"}, {"productApproachStart", "line"}, {"productDropOff", "line"}}
+gPostPlaceSequence = {{"productDropOffRightOffReduced", "line"}, {"productDropOffRightOffAndOver", "line"}, {"productDropOffMoveOut", "joint"}}
+
+gPrePickupSequenceFrontBerry5225 = {{"productPickupFrontRightOffAndOver", "joint"}, {"productPickupFrontRightOff", "line"}, {"productPickupFront", "line"}}
+gPostPickupSequenceFrontBerry5225 = {{"productPickupFrontOver", "line"}}
+
+--gPrePickupSequenceBackBerry5225 = {{"productPickupBackRightOffAndOver", "joint"}, {"productPickupBackRightOff", "line"}, {"productPickupBack", "line"}}
+--gPostPickupSequenceBackBerry5225 = {{"productPickupBackOver", "line"}}
+gPrePickupSequenceBackBerry5225 = {{"productPickupRightOffAndOverExtended", "joint"}, {"productPickupRightOff", "line"}, {"productPickup", "line"}}
+gPostPickupSequenceBackBerry5225 = {{"productPickupOver", "line"}}
+
+
+gPrePlaceSequenceBerry5225 = {{"productDropOffFrontMoveOut", "joint"}, {"productPreApproachFront", "joint"}, {"productApproachFrontStart", "line"}, {"productDropOffFront", "line"}}
+gPostPlaceSequenceBerry5225 = {{"productDropOffFrontRightOff", "line"}, {"productDropOffFrontRightOffAndOver", "line"}, {"productDropOffFrontMoveOut", "joint"}}
+gPrePlaceSequenceBerry5225Reversed = {{"productDropOffBackMoveOut", "joint"}, {"productPreApproachBack", "joint"}, {"productApproachBackStart", "line"}, {"productDropOffBack", "line"}}
+gPostPlaceSequenceBerry5225Reversed = {{"productDropOffBackRightOff", "line"}, {"productDropOffBackRightOffAndOver", "line"}, {"productDropOffBackMoveOut", "joint"}}
+
+gPrePlaceSequenceTopLayerBerry5225 = {{"productPreApproachFront", "joint"}, {"productApproachFrontStart", "line"}, {"productDropOffFront", "line"}}
+gPostPlaceSequenceTopLayerBerry5225 = {{"productDropOffFrontRightOff", "line"}}
+gPrePlaceSequenceTopLayerBerry5225Reversed = {{"productPreApproachBack", "joint"}, {"productApproachBackStart", "line"}, {"productDropOffBack", "line"}}
+gPostPlaceSequenceTopLayerBerry5225Reversed = {{"productDropOffBackRightOff", "line"}}
+
+gPreSheetPlaceSequencePallet1 = {{"sheetDropOff1MoveAbove", "joint"}, {"sheetApproach1", "joint"}, {"sheetDropOff1", "joint"}}
+gPostSheetPlaceSequencePallet1 = {{"sheetApproach1", "joint"}, {"sheetDropOff1MoveAbove", "joint"}}
+gPreSheetPlaceSequencePallet2 = {{"sheetDropOff2MoveAbove", "joint"}, {"sheetApproach2", "line"}, {"sheetDropOff2", "line"}}
+gPostSheetPlaceSequencePallet2 = {{"sheetApproach2", "line"}, {"sheetDropOff2MoveAbove", "joint"}}
+
+gPreSheetPlaceSequenceHighPallet1 = {{"idleSheetLiftUpHigh", "joint"}, {"sheetApproach1High", "joint"}, {"sheetDropOff1", "joint"}}
+gPostSheetPlaceSequenceHighPallet1 = {{"sheetApproach1High", "joint"}, {"idleSheetLiftUpHigh", "joint"}}
+gPreSheetPlaceSequenceHighPallet2 = {{"idleSheetLiftUpHigh", "joint"}, {"sheetApproach2", "joint"}, {"sheetDropOff2", "joint"}}
+gPostSheetPlaceSequenceHighPallet2 = {{"sheetApproach2", "joint"}, {"idleSheetLiftUpHigh", "joint"}}
+
+
+
+gSheetPickupSequence = {}
+gSheetDropOffSequence = {}
+
+
+
+
+
+gOffsetTable = {}
+-- Argument list {{posX, posY, posZ}, {rotX, rotY, rotZ}, toolKey}
+
+-- idlePose offset
+gOffsetTable["idleLiftUp"] = {{0, 0, 0.6}, rpy2quaternion({d2r(0), d2r(0), d2r(0)})}
+gOffsetTable["idleLiftUpHigh"] = {{0, 0, 0.8}, rpy2quaternion({d2r(0), d2r(0), d2r(0)})}
+
+-- product pickup offsets
+local pickupSideOffset = 0.04
+local pickupHeightOffset = -palletizerCall("getProductHeight") - 0.03
+local pickupHeightOffsetExtended = -palletizerCall("getProductHeight") - 0.20
+gOffsetTable["rightOffProductPickup"] = {{0, pickupSideOffset, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(0)}), "flange"}
+gOffsetTable["rightOffAndOverProduct"] = {{0, pickupSideOffset, pickupHeightOffset}, rpy2quaternion({d2r(0), d2r(0), d2r(0)}), "flange"}
+gOffsetTable["rightOffAndOverProductExtended"] = {{0, pickupSideOffset, pickupHeightOffsetExtended}, rpy2quaternion({d2r(0), d2r(0), d2r(0)}), "flange"}
+gOffsetTable["overProduct"] = {{0, 0, pickupHeightOffset}, rpy2quaternion({d2r(0), d2r(0), d2r(0)}), "flange"}
+
+-- front pickup offset. 
+local frontZRot = -90
+local toolYOffset = 0.075
+local frontFrontOffset = -(palletizerCall("getProductLength")/2 - toolYOffset)
+local frontSideOffset = -(palletizerCall("getProductWidth")/2 - toolYOffset)
+
+gOffsetTable["productFront"] = {{frontFrontOffset, frontSideOffset, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(frontZRot)}), "flange"}
+gOffsetTable["productFrontRightOff"] = {{frontFrontOffset - pickupSideOffset, frontSideOffset, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(frontZRot)}), "flange"}
+gOffsetTable["productFrontRightOffAndOver"] = {{frontFrontOffset - pickupSideOffset, frontSideOffset, pickupHeightOffset}, rpy2quaternion({d2r(0), d2r(0), d2r(frontZRot)}), "flange"}
+gOffsetTable["productFrontOver"] = {{frontFrontOffset, frontSideOffset, pickupHeightOffset}, rpy2quaternion({d2r(0), d2r(0), d2r(frontZRot)}), "flange"}
+
+gOffsetTable["productBack"] = {{-frontFrontOffset, frontSideOffset, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(-frontZRot)}), "flange"}
+gOffsetTable["productBackRightOff"] = {{-frontFrontOffset + pickupSideOffset, frontSideOffset, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(-frontZRot)}), "flange"}
+gOffsetTable["productBackRightOffAndOver"] = {{-frontFrontOffset + pickupSideOffset, frontSideOffset, pickupHeightOffset}, rpy2quaternion({d2r(0), d2r(0), d2r(-frontZRot)}), "flange"}
+gOffsetTable["productBackOver"] = {{-frontFrontOffset, frontSideOffset, pickupHeightOffset}, rpy2quaternion({d2r(0), d2r(0), d2r(-frontZRot)}), "flange"}
+
+
+-- Product dropoff offsets
+local dropOffSideOffset = 0.02 -- side offset is smaller at dropoff, because letting go with the vacuum requires less space and the movement range is limited and at the limit.
+local dropOffSideOffsetReduced = 0.01
+local dropOffHeightOffset = -palletizerCall("getProductHeight")
+local dropOffHeightOffsetReduced = -0.24
+--gOffsetTable["rightOffProductDropOff"] = {{0, dropOffSideOffset, -dropOffSideOffset}, rpy2quaternion({d2r(0), d2r(0), d2r(0)}), "flange"}
+gOffsetTable["rightOffProductDropOff"] = {{0, dropOffSideOffset, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(0)}), "flange"}
+gOffsetTable["rightOffProductDropOffReduced"] = {{0, dropOffSideOffsetReduced, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(0)}), "flange"}
+gOffsetTable["rightOffAndOverProductDropOff"] = {{0, pickupSideOffset, dropOffHeightOffset}, rpy2quaternion({d2r(0), d2r(0), d2r(0)}), "flange"}
+gOffsetTable["rightOffAndOverProductDropOffReduced"] = {{0, dropOffSideOffsetReduced, dropOffHeightOffsetReduced}, rpy2quaternion({d2r(0), d2r(0), d2r(0)}), "flange"}
+
+gOffsetTable["productFrontDropOffRightOff"] = {{frontFrontOffset - dropOffSideOffsetReduced, frontSideOffset, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(frontZRot)}), "flange"}
+gOffsetTable["productFrontDropOffRightOffAndOver"] = {{frontFrontOffset - dropOffSideOffsetReduced, frontSideOffset, dropOffHeightOffsetReduced}, rpy2quaternion({d2r(0), d2r(0), d2r(frontZRot)}), "flange"}
+gOffsetTable["productBackDropOffRightOff"] = {{-frontFrontOffset + dropOffSideOffsetReduced, frontSideOffset, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(-frontZRot)}), "flange"}
+gOffsetTable["productBackDropOffRightOffAndOver"] = {{-frontFrontOffset + dropOffSideOffsetReduced, frontSideOffset, dropOffHeightOffsetReduced}, rpy2quaternion({d2r(0), d2r(0), d2r(-frontZRot)}), "flange"}
+
+
+-- Sheet pickup offsets
+local sheetPickupHeight = palletizerCall("getSheetHeight") + 0.45
+gOffsetTable["sheetPickup1"] = {{0, 0.5, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(120)})}
+gOffsetTable["sheetPickup1Over"] = {{0, 0.5, sheetPickupHeight}, rpy2quaternion({d2r(0), d2r(0), d2r(120)})}
+gOffsetTable["sheetPickup2Over"] = {{0, 0, sheetPickupHeight}, rpy2quaternion({d2r(0), d2r(0), d2r(0)})}
+
+-- Sheet dropOff offsets
+gOffsetTable["sheetApproach1"] = {{-0.16, -0.05, 0.2}, rpy2quaternion({d2r(0), d2r(0), d2r(-32)})}
+gOffsetTable["sheetApproach1High"] = {{-0.35, -0.05, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(-32)})} -- theres a sheet approach
+gOffsetTable["sheetDropOff1"] = {{-0.41, -0.05, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(-32)})}
+gOffsetTable["sheetApproach2"] = {{-0.10, 0.04, 0}, rpy2quaternion({d2r(0), d2r(-20), d2r(0)})}
+gOffsetTable["sheetDropOff2"] = {{-0.35, 0.04, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(0)})}
+
+gTools = {}
+gTools["flange"] = {kin = {{0,0,0},{1,0,0,0}}, dyn = {0, {0,0,0}}}
+gTools["IPSTool"] = {kin = {{0,0, palletizerCall("getToolHeight")},{1,0,0,0}}, dyn = {0, {0,0,0}}}
+--gTools["sheetTool"] = {kin = {{0, 0.150, 0.235}, rpy2quaternion({d2r(-90), d2r(0), d2r(180)})}, dyn = {1, {0,0.1,0.1}}} -- Tool flips the z axis when i do my invKin. Check it later
+gTools["sheetTool"] = {kin = {{0, 0.150, 0.235}, rpy2quaternion({d2r(90), d2r(0), d2r(-180)})}, dyn = {1, {0,0.1,0.1}}}  -- I feel like the +/- should be opposite. Examine closer. 
+gTools["sheetDropOff2"] = {kin = {{0, 0.150, 0.235}, rpy2quaternion({d2r(90), d2r(-30), d2r(-180)})}, dyn = {1, {0,0.1,0.1}}}
+gTools["berrySeekFrontTool"] = {kin = {{0, 0.150, 0.235}, rpy2quaternion({d2r(90), d2r(0), d2r(0)})}, dyn = {1, {0,0.1,0.1}}}
+
+
+function updateDynamicOffsetValues()
+    pickupHeightOffset = -palletizerCall("getProductHeight") - 0.03
+    pickupHeightOffsetExtended = -palletizerCall("getProductHeight") - 0.20
+    toolYOffset = 0.075
+    frontFrontOffset = -(palletizerCall("getProductLength")/2 - toolYOffset)
+    frontSideOffset = -(palletizerCall("getProductWidth")/2 - toolYOffset)
+    dropOffHeightOffset = -palletizerCall("getProductHeight")
+    sheetPickupHeight = palletizerCall("getSheetHeight") + 0.45
+end
+
+gLoadPatternParameters = {}
+-- offset Arguments: str->"cartPos", str->"flippedCartPos", str->"refPose", str->"offset", bool->"moveAbove", str->"tool", float->"minimumHeight"
+-- cartPos/flippedCartPos format is, posX, posY, posZ, rotX, rotY, rotZ
+-- If no refPose is given last computed pose will be used. If that does not work it will try with pickup, 
+-- offset must be defined in gOffsetTable
+-- If moveAbove is set to true cartPos will be adjusted so its posZ is equal to the posZ of the idlePose. If moveAbove is assigned a value that value will be added addionally on 
+-- to the height after the pozZ have been equated.
+-- minimumHeight specifies a minimum for the z value of the cartesian coordinates with respect to the baseframe. 
+
+-- Idle Poses
+gLoadPatternParameters["idle"] = {cartPos = "getIdle", flippedCartPos = false, refPose = "getPickupJoints"} -- We move to idle initially and so it must have a manually set refPose.
+gLoadPatternParameters["idleSheet"] = {cartPos = "getIdleSheet", flippedCartPos = false, refPose = "getSheetJoints"} -- idle must have a manually set refPose.
+gLoadPatternParameters["idleLiftUp"] = {cartPos = "getIdle", flippedCartPos = false, refPose = "getPickupJoints", offset = "idleLiftUp"} -- We move to idle initially and so it must have a manually set refPose.
+gLoadPatternParameters["idleSheetLiftUp"] = {cartPos = "getIdleSheet", flippedCartPos = false, refPose = "getSheetJoints", offset = "idleLiftUp"} -- idle must have a manually set refPose.
+gLoadPatternParameters["idleSheetLiftUpHigh"] = {cartPos = "getIdleSheet", flippedCartPos = false, refPose = "getSheetJoints", offset = "idleLiftUpHigh"}
+
+-- Sheet from holder 1 pickup
+gLoadPatternParameters["sheetPickup1Over"] = {cartPos = "getSheetPickup", flippedCartPos = false, refPose = "getSheetJoints", offset = "sheetPickup1Over"}
+gLoadPatternParameters["sheetPickup1"] = {cartPos = "getSheetPickup", flippedCartPos = false, refPose = "getSheetJoints", offset = "sheetPickup1"}
+gLoadPatternParameters["sheetPickup1MoveAbove"] = {cartPos = "getSheetPickup", flippedCartPos = false, refPose = "getSheetJoints", offset = "sheetPickup1", moveAbove = true, minimumHeight = 0.3}
+
+-- Sheet from holder 2 pickup 
+gLoadPatternParameters["sheetPickup2Over"] = {cartPos = "getSheetPickup", flippedCartPos = false, refPose = "getSheetJoints", offset = "sheetPickup2Over"}
+gLoadPatternParameters["sheetPickup2"] = {cartPos = "getSheetPickup", flippedCartPos = false, refPose = "getSheetJoints"}
+gLoadPatternParameters["sheetPickup2MoveAbove"] = {cartPos = "getSheetPickup", flippedCartPos = false, refPose = "getSheetJoints", moveAbove = true, minimumHeight = 0.3}
+
+-- Sheet DropOff
+gLoadPatternParameters["sheetDropOff1"] = {cartPos = "getSheetDropOff", flippedCartPos = false, refPose = "getSheetJoints", offset = "sheetDropOff1", tool = "sheetTool"}
+gLoadPatternParameters["sheetDropOff1MoveAbove"] = {cartPos = "getSheetDropOff", flippedCartPos = false, refPose = "getSheetJoints", offset = "sheetDropOff1", tool = "sheetTool",
+moveAbove = true, minimumHeight = 0.3}
+gLoadPatternParameters["sheetApproach1"] = {cartPos = "getSheetApproach", flippedCartPos = false, refPose = "getSheetJoints", offset = "sheetApproach1", tool = "sheetTool"}
+gLoadPatternParameters["sheetApproach1High"] = {cartPos = "getSheetApproach", flippedCartPos = false, offset = "sheetApproach1High", tool = "sheetTool"}
+
+gLoadPatternParameters["sheetDropOff1MoveAboveHigh"] = {cartPos = "getSheetDropOff", flippedCartPos = false, refPose = "getSheetJoints", offset = "sheetDropOff1", tool = "sheetTool",
+moveAbove = 0.4, minimumHeight = 0.3}
+
+gLoadPatternParameters["sheetDropOff2"] = {cartPos = "getSheetDropOff", flippedCartPos = false, offset = "sheetDropOff2", tool = "sheetDropOff2"}
+gLoadPatternParameters["sheetDropOff2MoveAbove"] = {cartPos = "getSheetDropOff", flippedCartPos = false, refPose = "getSheetJoints", offset = "sheetDropOff2", tool = "sheetDropOff2",
+moveAbove = true, minimumHeight = 0.3}
+gLoadPatternParameters["sheetApproach2"] = {cartPos = "getSheetApproach", flippedCartPos = false, offset = "sheetApproach2", tool = "sheetDropOff2"}
+
+gLoadPatternParameters["sheetDropOff2MoveAboveHigh"] = {cartPos = "getSheetDropOff", flippedCartPos = false, refPose = "getSheetJoints", offset = "sheetDropOff2", tool = "sheetDropOff2",
+moveAbove = 0.4, minimumHeight = 0.3}
+gLoadPatternParameters["sheetApproach2High"] = {cartPos = "getSheetApproach", flippedCartPos = false, offset = "sheetApproach2", tool = "sheetDropOff2"}
+
+-- Product pickup poses
+gLoadPatternParameters["productPickup"] = {cartPos = "getPickup", flippedCartPos = false, refPose = "getPickupJoints"}
+gLoadPatternParameters["productPickupOver"] = {cartPos = "getPickup", flippedCartPos = false, refPose = "getPickupJoints", offset = "overProduct"}
+gLoadPatternParameters["productPickupRightOff"] = {cartPos = "getPickup", flippedCartPos = false, refPose = "getPickupJoints", offset = "rightOffProductPickup"}
+gLoadPatternParameters["productPickupRightOffAndOver"] = {cartPos = "getPickup", flippedCartPos = false, refPose = "getPickupJoints", offset = "rightOffAndOverProduct"}
+gLoadPatternParameters["productPickupRightOffAndOverExtended"] = {cartPos = "getPickup", flippedCartPos = false, refPose = "getPickupJoints", offset = "rightOffAndOverProductExtended"}
+
+gLoadPatternParameters["productPickupFront"] = {cartPos = "getPickup", flippedCartPos = false, refPose = "getPickupJoints", offset = "productFront"}
+gLoadPatternParameters["productPickupFrontOver"] = {cartPos = "getPickup", flippedCartPos = false, refPose = "getPickupJoints", offset = "productFrontOver"}
+gLoadPatternParameters["productPickupFrontRightOff"] = {cartPos = "getPickup", flippedCartPos = false, refPose = "getPickupJoints", offset = "productFrontRightOff"}
+gLoadPatternParameters["productPickupFrontRightOffAndOver"] = {cartPos = "getPickup", flippedCartPos = false, refPose = "getPickupJoints", offset = "productFrontRightOffAndOver"}
+
+gLoadPatternParameters["productPickupBack"] = {cartPos = "getPickup", flippedCartPos = false, refPose = "getPickupJoints", offset = "productBack"}
+gLoadPatternParameters["productPickupBackOver"] = {cartPos = "getPickup", flippedCartPos = false, refPose = "getPickupJoints", offset = "productBackOver"}
+gLoadPatternParameters["productPickupBackRightOff"] = {cartPos = "getPickup", flippedCartPos = false, refPose = "getPickupJoints", offset = "productBackRightOff"}
+gLoadPatternParameters["productPickupBackRightOffAndOver"] = {cartPos = "getPickup", flippedCartPos = false, refPose = "getPickupJoints", offset = "productBackRightOffAndOver"}
+
+-- Product dropoff poses
+gLoadPatternParameters["productPreApproach"] = {cartPos = "getPreApproach", flippedCartPos = false}
+gLoadPatternParameters["productApproachStart"] = {cartPos = "getApproachStart", flippedCartPos = false}
+gLoadPatternParameters["productDropOff"] = {cartPos = "getDropOff", flippedCartPos = false}
+gLoadPatternParameters["productDropOffRightOff"] = {cartPos = "getDropOff", flippedCartPos = false, offset = "rightOffProductDropOff"}
+gLoadPatternParameters["productDropOffRightOffReduced"] = {cartPos = "getDropOff", flippedCartPos = false, offset = "rightOffProductDropOffReduced"}
+gLoadPatternParameters["productDropOffRightOffAndOver"] = {cartPos = "getDropOff", flippedCartPos = false, offset = "rightOffAndOverProductDropOff"}
+gLoadPatternParameters["productDropOffRightOffAndOverReduced"] = {cartPos = "getDropOff", flippedCartPos = false, offset = "rightOffAndOverProductDropOffReduced"}
+gLoadPatternParameters["productDropOffMoveOut"] = {cartPos = "getMoveOutDropOff", flippedCartPos = false, moveAbove = "true", refPose = "static", centerOnPallet = 0.1}
+
+
+gLoadPatternParameters["productPreApproachFront"] = {cartPos = "getPreApproach", flippedCartPos = false, offset = "productFront"}
+gLoadPatternParameters["productApproachFrontStart"] = {cartPos = "getApproachStart", flippedCartPos = false, offset = "productFront"}
+gLoadPatternParameters["productDropOffFront"] = {cartPos = "getDropOff", flippedCartPos = false, offset = "productFront"}
+gLoadPatternParameters["productDropOffFrontRightOff"] = {cartPos = "getDropOff", flippedCartPos = false, offset = "productFrontDropOffRightOff"}
+gLoadPatternParameters["productDropOffFrontRightOffAndOver"] = {cartPos = "getDropOff", flippedCartPos = false, offset = "productFrontDropOffRightOffAndOver"}
+gLoadPatternParameters["productDropOffFrontMoveOut"] = {cartPos = "getMoveOutDropOff", flippedCartPos = false, moveAbove = "true", refPose = "static", offset = "productFront", centerOnPallet = 0.1}
+
+
+gLoadPatternParameters["productPreApproachBack"] = {cartPos = "getPreApproach", flippedCartPos = false, refPose ="static", offset = "productBack"}
+gLoadPatternParameters["productApproachBackStart"] = {cartPos = "getApproachStart", flippedCartPos = false, offset = "productBack"}
+gLoadPatternParameters["productDropOffBack"] = {cartPos = "getDropOff", flippedCartPos = false, offset = "productBack"}
+gLoadPatternParameters["productDropOffBackRightOff"] = {cartPos = "getDropOff", flippedCartPos = false, offset = "productBackDropOffRightOff"}
+gLoadPatternParameters["productDropOffBackRightOffAndOver"] = {cartPos = "getDropOff", flippedCartPos = false, offset = "productBackDropOffRightOffAndOver"}
+gLoadPatternParameters["productDropOffBackMoveOut"] = {cartPos = "getMoveOutDropOff", flippedCartPos = false, moveAbove = "true", refPose = "static", offset = "productBack", centerOnPallet = 0.1}
+
+
+
+
+-- Define which IO is connected to which function. Change the IO names to match your setup. 
+IOTable = {}
+IOTable["checkVacuum1"] = "U_DI_00"
+IOTable["pallet1"] = "U_DI_01"
+IOTable["pallet2"] = "U_DI_02"
+IOTable["product1"] = "U_DI_03"
+IOTable["douplePick1"] = "U_DI_04"
+IOTable["product2"] = "U_DI_05"
+IOTable["douplePick2"] = "U_DI_06"
+IOTable["liftIsUp"] = "U_DI_07"
+IOTable["checkVacuum2"] = "U_DI_10"
+IOTable["notInUse"] = "U_DI_11"
+IOTable["liftIsDown"] = "U_DI_12"
+IOTable["sheet1"] = "U_DI_13"
+IOTable["sheet2"] = "U_DI_14"
+IOTable["notInUse"] = "U_DI_15"
+IOTable["notInUse"] = "U_DI_16"
+IOTable["notInUse"] = "U_DI_17"
+
+IOTable["vacuum1"] = "U_DO_00"
+IOTable["blow1"] = "U_DO_01"
+IOTable["fingersClose"] = "U_DO_02"
+IOTable["fingersOpen"] = "U_DO_03"
+IOTable["moveLiftUp"] = "U_DO_04"
+IOTable["moveLiftDown"] = "U_DO_05"
+IOTable["vacuum2"] = "U_DO_06"
+IOTable["blow2"] = "U_DO_07"
+IOTable["notInUse"] = "U_DO_10"
+IOTable["notInUse"] = "U_DO_11"
+IOTable["notInUse"] = "U_DO_12"
+IOTable["notInUse"] = "U_DO_13"
+IOTable["notInUse"] = "U_DO_14"
+IOTable["notInUse"] = "U_DO_15"
+IOTable["notInUse"] = "U_DO_16"
+IOTable["notInUse"] = "U_DO_17"
+
+ -- which vacuum signals to check for a given type of pickup.
+checkVacuumTable = {}
+checkVacuumTable["singlePick"] = {"checkVacuum1"}
+checkVacuumTable["doublePick"] = {"checkVacuum1", "checkVacuum2"}
+checkVacuumTable["sheetPick"] = {"checkVacuum2"}

@@ -1,0 +1,1874 @@
+-- Contains functions for palletizing
+-- Nordbo Robotics Aps 2019
+-- (C) All Rights Reserved
+init_global_variables()
+
+package.path = package.path .. ";/root/AuboRobotWorkSpace/teachpendant/share/teachpendant/script/?.aubo"
+require("commonLib")
+require("globalDefines")
+print("loading palle_func1")
+function distanceJointSpace(pose, refpose)
+  local dist =  (pose[1] - refpose[1]) * (pose[1] - refpose[1]) * 1.2
+  dist = dist + (pose[2] - refpose[2]) * (pose[2] - refpose[2])
+  dist = dist + (pose[3] - refpose[3]) * (pose[3] - refpose[3])
+  dist = dist + (pose[4] - refpose[4]) * (pose[4] - refpose[4])
+  dist = dist + (pose[5] - refpose[5]) * (pose[5] - refpose[5])
+  dist = dist + (pose[6] - refpose[6]) * (pose[6] - refpose[6]) * 0.01
+  return dist
+end
+
+function auboJointToVector(joints)
+  local pos = {joints.j1, joints.j2, joints.j3, joints.j4, joints.j5, joints.j6}
+  return pos
+end
+
+function isJointsValid(pose)
+  if ((not pose) or (tostring(pose[6]) == "nan")) then
+    return false
+  end
+  if r2d(pose[6]) <= 175 and r2d(pose[6]) >= -175 and pose[3] >= 0 and r2d(pose[2]) <= 60 then
+    return true, pose
+  end
+  return false
+end
+
+function distanceToValidConfigs(jointconfig, refpose)
+  local dist = {}
+  for i, pose in pairs(jointconfig) do
+    if isJointsValid(pose) then
+      dist[i] = distanceJointSpace(pose, refpose)
+    end
+  end
+  return dist
+end
+
+function compute_pallet_pose(cartPose, flippedPose, refpose, tool) -- returns invkin solution and checks valid configurations
+  --print("entering compute_pallet_pose")
+  local jointconfig = {}
+  tool = tool or "flange"
+
+  local _
+  _, jointconfig[1] = pcall(get_target_pose, refpose, {cartPose[1],cartPose[2],cartPose[3]}, rpy2quaternion({cartPose[4], cartPose[5], cartPose[6]}), false, gTools[tool]["kin"][1], gTools[tool]["kin"][2])
+  if flippedPose then
+    _, jointconfig[2] = pcall(get_target_pose, refpose, {flippedPose[1],flippedPose[2],flippedPose[3]}, rpy2quaternion({flippedPose[4], flippedPose[5], flippedPose[6]}), false, gTools[tool]["kin"][1], gTools[tool]["kin"][2])
+  end
+
+  -- distance to valid configs
+  local dist = distanceToValidConfigs(jointconfig, refpose)
+
+  -- if no valid configs first try different refPose
+  if next(dist) == nil then
+    --try different refCondition
+    refpose = palletizerCall("getPickupJoints")
+    _, jointconfig[1] = pcall(get_target_pose, refpose, {cartPose[1],cartPose[2],cartPose[3]}, rpy2quaternion({cartPose[4], cartPose[5], cartPose[6]}), false, gTools[tool]["kin"][1], gTools[tool]["kin"][2])
+    dist = distanceToValidConfigs(jointconfig, refpose)
+  end
+
+  -- if still no valid configs, return false
+  if next(dist) == nil then
+    return false
+  end
+
+  -- find config with shortest distance in joint space
+  local min
+  local key
+  for i, v in pairs(dist) do
+    key = i
+    min = v
+    break
+  end
+  for i, v in pairs(dist) do
+    if v < min then
+      key = i
+      min = v
+    end
+  end
+
+  local flip
+  if key == 1 then
+    flip = false
+  else
+    flip = true
+  end
+
+  return jointconfig[key], flip
+end
+
+function countTruesInBooleanList(list)
+  local count = 0
+  for i, bool in pairs(list) do
+    if bool then
+      count = count + 1
+    end
+  end
+  return count
+end
+
+function getNumberOfSheets()
+  if gSheetSettingsFromInterface then
+    local sheetToPlace = palletizerCall("getSheetOnLayers")
+    return countTruesInBooleanList(sheetToPlace)
+  else
+    palletizerCall("getNumberOfSheets")
+  end
+end
+
+function getSheet() --Number of sheets already placed 
+  if gSheetSettingsFromInterface then
+    local pallet = palletizerCall("getActivePallet")
+    return countTruesInBooleanList(gSheetsAlreadyPlaced[pallet])
+  else
+    return palletizerCall("getSheet")
+  end
+end
+
+function getSheetOnCurrentLayer()
+  if gSheetSettingsFromInterface then
+    local currentLayer = palletizerCall("getCurrentLayer")
+    local sheetsToPlace = palletizerCall("getSheetOnLayers")
+    return sheetsToPlace[currentLayer + 1]
+  else
+    return palletizerCall("getSheetOnCurrentLayer")
+  end
+end
+
+function allSheetsPlaced()
+  return (getSheet() >= getNumberOfSheets())
+end
+
+function resetPallet(palletNr)
+  if not palletNr then
+    palletNr = palletizerCall("getActivePallet")
+  end
+  gSheetsAlreadyPlaced[palletNr] = {false, false, false, false, false}
+  palletizerCall("resetPallet|" .. palletNr)
+end
+
+function confirmPalletEmpty()
+  if isPalletFull() then  --This should really be in a seperate function. It has nothing to do with checking that the pallet is clear.
+    resetPallet()
+  end
+
+  local active_pallet = palletizerCall("getActivePallet")
+  local message
+  if (active_pallet  == 1) then
+    message = "Stacking on Pallet 1. \nPlease confirm that: \nPallet 1 contains the correct number of products, \nthen press continue."
+  else
+    message = "Stacking on Pallet 2. \nPlease confirm that: \nPallet 2 contains the correct number of products, \nthen press continue."
+  end
+
+  -- disable IO if mode == simulator == 1
+  checkPalletPresence()
+  popup_message(0, message, false)
+end
+
+function print_pose(pose, name)
+  local name = name or ""
+  local text
+  text = "Pose " .. name
+  text = text .. string.format(" [%.2f", pose[1])
+  text = text .. string.format(",%.2f",  pose[2])
+  text = text .. string.format(",%.2f",  pose[3])
+  text = text .. string.format(",%.2f",  pose[4])
+  text = text .. string.format(",%.2f",  pose[5])
+  text = text .. string.format(",%.2f]", pose[6])
+  print(text)
+end
+
+function print_pose_deg(pose, name)
+  local name = name or ""
+  local text
+  text = "Pose " .. name
+  text = text .. string.format(" [%.2f", r2d(pose[1]))
+  text = text .. string.format(",%.2f",  r2d(pose[2]))
+  text = text .. string.format(",%.2f",  r2d(pose[3]))
+  text = text .. string.format(",%.2f",  r2d(pose[4]))
+  text = text .. string.format(",%.2f",  r2d(pose[5]))
+  text = text .. string.format(",%.2f]", r2d(pose[6]))
+  print(text)
+end
+
+function write_pose_deg(pose, file)
+  file:write(r2d(pose[1]) .. ", ")
+  file:write(r2d(pose[2]) .. ", ")
+  file:write(r2d(pose[3]) .. ", ")
+  file:write(r2d(pose[4]) .. ", ")
+  file:write(r2d(pose[5]) .. ", ")
+  file:write(r2d(pose[6]))
+end
+
+function write_pose(pose, file)
+  file:write(pose[1] .. ", ")
+  file:write(pose[2] .. ", ")
+  file:write(pose[3] .. ", ")
+  file:write(pose[4] .. ", ")
+  file:write(pose[5] .. ", ")
+  file:write(pose[6])
+end
+
+function cartPosR2D(cartPos)
+  if not (#cartPos == 6) then
+      popup_message(0, "cartPosR2D wrong length of argument.", false)
+  end
+  cartPos[4] = r2d(cartPos[4])
+  cartPos[5] = r2d(cartPos[5])
+  cartPos[6] = r2d(cartPos[6])
+  return cartPos
+end
+
+function cartPosD2R(cartPos)
+  if not (#cartPos == 6) then
+      popup_message(0, "cartPosD2R wrong length of argument.", false)
+  end
+  cartPos[4] = d2r(cartPos[4])
+  cartPos[5] = d2r(cartPos[5])
+  cartPos[6] = d2r(cartPos[6])
+  return cartPos
+end
+
+function addBasewiseOffsetToPos(pos, offset)
+  local offsetPos = offset[1]
+  pos[1] = pos[1] + offsetPos[1]
+  pos[2] = pos[2] + offsetPos[2]
+  pos[3] = pos[3] + offsetPos[3]
+  local offsetRot = quaternion2rpy(offset[2])
+  pos[4] = pos[4] + offsetRot[1]
+  pos[5] = pos[5] + offsetRot[2]
+  pos[6] = pos[6] + offsetRot[3]
+  return pos
+end
+
+function addToolwiseOffsetToPos(pos, offset, verbose)
+    -- take offset convert to baseCoordinatesystem, modify cartPose accordingly. 
+    --print("Entering add offsetToPos")
+  if not offset then
+    return pos
+  elseif not gOffsetTable[offset] then
+    popup_message(0, "Offset not a valid key for gOffsetTable in addToolwiseOffsetToPos", false)
+  end
+  -- Convert and add Positional element. 
+  local posOffset = gOffsetTable[offset][1]
+  local offsetToolKey = gOffsetTable[offset][3]
+  local offsetToolRot = gTools[offsetToolKey]["kin"][2]
+  local offsetToolRotInverted = invertQuat(offsetToolRot)
+  --printIfVerbose("offsetToolRotation", verbose)
+  --printTableIfVerbose(quaternion2rpy(offsetToolRotInverted), verbose)
+  local robotRot = {}
+  robotRot[1] = pos[4]
+  robotRot[2] = pos[5]
+  robotRot[3] = pos[6]
+  robotRot = rpy2quaternion(robotRot)
+  local robotRotInverted = invertQuat(robotRot)
+  local fullReverseRot = hamiltonProduct(offsetToolRotInverted, robotRotInverted) -- hamiltonProduct(robotRotInverted, offsetToolRotInverted)
+  printIfVerbose("full ReverseRot as radians: ", verbose)
+  printTableIfVerbose(quaternion2rpy(fullReverseRot), verbose)
+  printIfVerbose("positional offset: ", verbose)
+  printTableIfVerbose(posOffset, verbose)
+  local rotatedOffset = rotatePointWithQuaternion(posOffset, fullReverseRot)
+  printIfVerbose("rotatedOffset", verbose)
+  printTableIfVerbose(rotatedOffset, verbose)
+  pos[1] = rotatedOffset[1] + pos[1]
+  pos[2] = rotatedOffset[2] + pos[2]
+  pos[3] = rotatedOffset[3] + pos[3]
+  local offsetDirectRot = quaternion2rpy(gOffsetTable[offset][2])
+  pos[4] = pos[4] + offsetDirectRot[1]
+  pos[5] = pos[5] + offsetDirectRot[2]
+  pos[6] = pos[6] + offsetDirectRot[3]
+  return pos
+end
+
+function addMoveAboveOffsetToPos(pos, posFlipped, additionalOffset)
+  --print("Entered moveAbove")
+  local idle = palletizerCall("getIdle")
+  if palletizerCall("getLiftUp") then
+    idle[3] = idle[3] + 0.6
+  end
+  --if additionalOffset then
+  --  idle[3] = idle[3] + additionalOffset
+  --end
+  if idle[3] <= pos[3] then
+    return pos
+  end
+  local above = copyArray(pos)
+  local aboveFlipped = posFlipped
+  above[3] = idle[3]
+  if posFlipped then
+    aboveFlipped = copyArray(posFlipped)
+    aboveFlipped[3] = idle[3]
+  end
+  return above, aboveFlipped
+end
+
+function addMinimumHeight(pos, minimum)
+  if not minimum then
+    return
+  end
+  if pos[3] < minimum then
+    pos[3] = minimum
+  end
+end
+
+function getCartPosWithRadians(cartPos, cartPosKey)
+  local keysWithRotationsInDegrees = {"getPreApproach", "getApproachStart", "getMoveOutDropOff", "getDropOff", "getSheetDropOff", "getSheetApproach"}
+  if hasValue(keysWithRotationsInDegrees, cartPosKey) then
+    return cartPosD2R(cartPos)
+  else
+    return cartPos
+  end
+end
+
+function testMoveLoadPatternPose(name, moveType)
+  local pose = loadPatternPose(name, true)
+  setSpeed()
+  if moveType == "line" then
+    move_line(pose, true)
+  else
+    move_joint(pose, true)
+  end
+end
+
+function printIfVerbose(string, bool)
+  if bool then
+    print(string)
+  end
+end
+
+function printTableIfVerbose(table, bool)
+  if bool then
+    printTable(table)
+  end
+end
+
+function moveTowardsValue(input, shift, equilibriumValue)
+  equilibriumValue = equilibriumValue or 0
+  if input > equilibriumValue then
+    local newValue = input - shift
+    if newValue < equilibriumValue then
+      return equilibriumValue
+    else
+      return newValue
+    end
+  elseif input < equilibriumValue then
+    local newValue = input + shift
+    if newValue > equilibriumValue then
+      return equilibriumValue
+    else
+      return newValue
+    end
+  else
+    return shift
+  end
+end
+
+function centerOnPallet(cartPos, dist)
+  if not dist then
+    return
+  end
+
+  cartPos[1] = moveTowardsValue(cartPos[1], dist)
+  local pallet = palletizerCall("getActivePallet")
+  if pallet == 1 then
+    cartPos[2] = moveTowardsValue(cartPos[2], dist, 0.5)
+  elseif pallet == 2 then
+    cartPos[2] = moveTowardsValue(cartPos[2], dist, -0.5)
+  end
+  return cartPos
+end
+
+function resetLastLoadedPose()
+  if palletizerCall("getLiftUp") then
+    gLastLoadedPose = {loadPatternPose("idleLiftUp"), "idle"}
+  else
+    gLastLoadedPose = {loadPatternPose("idle"), "idle"}
+  end
+end
+
+function getStaticRef(cartPos)
+  local activePallet = palletizerCall("getActivePallet")
+  if activePallet == 1 then
+    return gStaticRefPallet1
+  elseif activePallet == 2 then
+    return gStaticRefPallet2
+  end
+end
+
+function addBerrySpecificOffsets(cartPos, name)
+  local patternName = palletizerCall("getPatternName")
+  local listOfPositionsToChange = {"productDropOffMoveOut", "productPreApproach", "productApproachStart", "productDropOff", "productDropOffRightOff", "productDropOffRightOffAndOver"}
+  local listOfPatternsToDoThisFor = {"Berry_5225_test"}
+  local rightPattern = hasValue(listOfPatternsToDoThisFor, patternName)
+  local rightPosition = hasValue(listOfPositionsToChange, name)
+  local rightPallet = palletizerCall("getActivePallet") == 2
+  if rightPattern and rightPosition and rightPallet then
+    cartPos[6] = cartPos[6] - 3.141
+  end
+end
+
+function nameChangeIfManualRuleSet(name)
+  local patternName = palletizerCall("getPatternName")
+  if (patternName == "Berry_5225") then
+    if (name == "productDropOffRightOff") then
+      return "productDropOffRightOffReduced"
+    elseif (name == "productDropOffRightOffAndOver") then
+      return "productDropOffRightOffAndOverReduced"
+    end
+  end
+  return name
+end
+
+function APITest()
+  local prInCurrentLayer = palletizerCall("getProductsInCurrentLayer")
+  print("Products in current layer: " .. tostring(prInCurrentLayer))
+  local productWidth = palletizerCall("getProductWidth")
+  print("product width: " .. tostring(productWidth))
+  local productLength = palletizerCall("getProductLength")
+  print("product length: " .. tostring(productLength))
+  local productHeight = palletizerCall("getProductHeight")
+  print("product height: " .. tostring(productHeight))
+  local currentLayer = palletizerCall("getCurrentLayer")
+  print("currentLayer: " .. tostring(currentLayer))
+  currentLayer = getCurrentLayerModified()
+  print("currentLayer: " .. tostring(currentLayer))
+  local activePallet = palletizerCall("getActivePallet")
+  print("Active Pallet: " .. tostring(activePallet))
+  local pickupPos = palletizerCall("getPickup")
+  print("PickupPos: ")
+  printTable(pickupPos)
+end
+
+
+function loadPatternPose(name, verbose)
+  -- Need to reimplement flip in some form. 
+  local cartPos, flippedPos, refPose
+  --name = nameChangeIfManualRuleSet(name)
+  printIfVerbose("Loading pattern pose: " .. name, verbose)
+  if not gLoadPatternParameters[name] then
+    popup_message(0, "Incorrect name of pose in loadPatternPose: " .. name, false)
+  end
+  local cartPosKey = gLoadPatternParameters[name]["cartPos"]
+  local flippedCartPosKey = gLoadPatternParameters[name]["flippedCartPos"]
+  local refPoseKey = gLoadPatternParameters[name]["refPose"]
+  local offsetKey = gLoadPatternParameters[name]["offset"]
+  local moveAbove = gLoadPatternParameters[name]["moveAbove"]
+  cartPos = palletizerCall(cartPosKey)
+  cartPos = getCartPosWithRadians(cartPos, cartPosKey) -- some cartPos have angles in degrees. Check and make it uniformly a radian thing. 
+  printIfVerbose("original cartPos", verbose)
+  printTableIfVerbose(cartPos, verbose)
+
+  --addBerrySpecificOffsets(cartPos, name)
+
+  if gOffsetTable[offsetKey] and (#gOffsetTable[offsetKey] >= 3) then
+    cartPos = addToolwiseOffsetToPos(cartPos, offsetKey, verbose)
+  elseif gOffsetTable[offsetKey] then
+    cartPos = addBasewiseOffsetToPos(cartPos, gOffsetTable[offsetKey])
+  elseif offsetKey then
+    popup_message(0, "OffsetKey: " .. offsetKey .. ", has no match in gOffsetTable in loadPatternPose.", false)
+  end
+
+  if flippedCartPosKey then
+    flippedPos = palletizerCall(flippedCartPosKey)
+    printIfVerbose("The flippedPos: ", verbose)
+    printTableIfVerbose(flippedPos, verbose)
+  end
+  if (not refPoseKey) then
+    refPose = gLastLoadedPose[1]
+    printIfVerbose("Using last loaded pose as ref: " .. gLastLoadedPose[2], verbose)
+  elseif refPoseKey == "static" then
+    refPose = getStaticRef(cartPos)
+    printIfVerbose("Using static refPose", verbose)
+  elseif (type(refPoseKey) == "string") then
+    printIfVerbose("Using defined pose as ref: " .. refPoseKey, verbose)
+    refPose = palletizerCall(refPoseKey)
+  else
+    refPose = refPoseKey
+  end
+
+  if moveAbove then  -- add moveAbove if elected
+    cartPos, flippedPos = addMoveAboveOffsetToPos(cartPos, flippedPos, moveAbove)
+  end
+
+  centerOnPallet(cartPos, gLoadPatternParameters[name]["centerOnPallet"])
+  addMinimumHeight(cartPos, gLoadPatternParameters[name]["minimumHeight"])
+
+
+  printIfVerbose("Modified CartPos", verbose)
+  printTableIfVerbose(cartPos, verbose)
+
+  local tool = gLoadPatternParameters[name]["tool"] or "flange"
+  printIfVerbose("Tool: " .. tool, verbose)
+  local newLoadedPose = compute_pallet_pose(cartPos, flippedPos, refPose, tool)
+  if not newLoadedPose then
+    print("Inverse Kinematics failed for " .. name)
+  else
+    gLastLoadedPose = {newLoadedPose, name}
+  end
+
+  if flippedPos then
+    return newLoadedPose, flippedPos
+  end
+  return newLoadedPose, cartPos
+end
+
+function loadSequence(sequence, verbose)
+  local computedPoses = {}
+  local cartPosList = {}
+  local newPose, cartPos
+  for i, waypoint in ipairs(sequence) do
+    newPose, cartPos = loadPatternPose(waypoint[1], verbose)
+    sleep(0.08) -- Without the delay there is no output in the terminal. 
+    computedPoses[waypoint[1]] = newPose
+    cartPosList[waypoint[1]] = cartPos
+  end
+  return computedPoses, cartPosList
+end
+
+function checkCartesianPositions(file, posNameList, errorMessTitle)
+  local returnValue = true
+  local computedPoses, cartPosList = loadSequence(posNameList)
+  for i, name in ipairs(posNameList) do
+    if not computedPoses[name[1]] then
+      file:write(errorMessTitle .. "\t" .. name[1] .. "\t")
+      file:write("[")
+      write_pose(cartPosList[name[1]], file)
+      file:write("]")
+      file:write("\n")
+      returnValue = false
+    end
+  end
+  return returnValue
+end
+
+function moveSequence(sequence, verbose, speed)
+  --print("Performing movement of sequence")
+  --printTable(sequence)
+  if not speed then
+    setSpeed()
+  end
+  local pose
+  for i, waypoint in ipairs(sequence) do
+    pose = loadPatternPose(waypoint[1], verbose)
+    print("moveSequence pose: " .. tostring(waypoint[1]))
+    printTable(pose)
+    print("moveType: " .. tostring(waypoint[2]))
+    move(pose, waypoint[2], false, true)
+  end
+end
+
+
+function getCurrentPickupSequence()
+  local patternName = palletizerCall("getPatternName")
+  if patternName == "Berry_5225" then
+    return gPrePickupSequenceBackBerry5225, gPostPickupSequenceBackBerry5225
+  else
+    return gPrePickupSequence, gPostPickupSequence
+  end
+end
+
+function getCurrentPlaceSequence()
+  local patternName = palletizerCall("getPatternName")
+  local activePallet = palletizerCall("getActivePallet")
+  local currentLayer = palletizerCall("getCurrentLayer")
+
+  --print("name " .. patternName)
+  if (patternName == "Berry_5225" or patternName == "Berry_5202" or patternName == "Berry_5203") then
+    --print("pallet: " .. tostring(activePallet))
+    if (activePallet == 1) then
+      --print("layer: " .. tostring(currentLayer))
+      if (currentLayer == 4) then
+        --print("madeIt1")
+        return gPrePlaceSequenceTopLayerBerry5225, gPostPlaceSequenceTopLayerBerry5225
+      else
+        return gPrePlaceSequenceBerry5225, gPostPlaceSequenceBerry5225
+      end
+    elseif (activePallet == 2) then
+     -- print("layer: " .. tostring(currentLayer))
+      if (currentLayer == 4) then
+        --print("madeIt2")
+        return gPrePlaceSequenceTopLayerBerry5225Reversed, gPostPlaceSequenceTopLayerBerry5225Reversed
+      else
+        return gPrePlaceSequenceBerry5225Reversed, gPostPlaceSequenceBerry5225Reversed
+      end
+    end
+  else
+    return gPrePlaceSequence, gPostPlaceSequence
+  end
+end
+
+function checkProductPickup(file)
+  local liftSetting
+  local ret = true
+  print("liftEnabled: " .. tostring(palletizerCall("getLiftEnabled")))
+  local prePickupSequence, postPickupSequence = getCurrentPickupSequence()
+  if palletizerCall("getLiftEnabled") then
+    liftSetting = palletizerCall("getLiftUp")
+    palletizerCall("setLiftUp|false")
+    resetLastLoadedPose()
+    ret = checkCartesianPositions(file, prePickupSequence, "Product Pickup. lift Down. \t\t") and ret
+    ret = checkCartesianPositions(file, postPickupSequence, "Product Pickup. lift Down. \t\t") and ret
+    palletizerCall("setLiftUp|true")
+    resetLastLoadedPose()
+    ret = checkCartesianPositions(file, prePickupSequence, "Product Pickup. lift Up. \t\t") and ret
+    ret = checkCartesianPositions(file, postPickupSequence, "Product Pickup. lift Up. \t\t") and ret
+    palletizerCall("setLiftUp|" .. tostring(liftSetting))
+    if not (ret) then
+      popup_message(0, "Error in current pattern - not all pickup positions are reachable", false)
+    end
+    return ret
+  else
+    print("Checking product pickup")
+    resetLastLoadedPose()
+    ret = checkCartesianPositions(file, prePickupSequence, "Product Pickup.\t\t") and ret
+    ret = checkCartesianPositions(file, postPickupSequence, "Product Pickup.\t\t") and ret
+    if not ret then
+      popup_message(0, "Error in current pattern - not all pickup positions are reachable", false)
+    end
+    return ret
+  end
+end
+
+function checkPick(file)
+  local pick = palletizerCall("getPick")
+  print("Checking pick " .. tostring(pick))
+  resetLastLoadedPose()
+  local preDropOffSequence, postDropOffSequence = getCurrentPlaceSequence()
+  local retVal = checkCartesianPositions(file, preDropOffSequence, "Pick " .. pick .. ":\tdropoff\t\t")
+  return (retVal and checkCartesianPositions(file, postDropOffSequence, "Pick " .. pick .. ":\tdropoff\t\t"))
+end
+
+function printSingleCheckPick()
+  local pick = palletizerCall("getPick")
+  print("Checking pick " .. tostring(pick))
+  resetLastLoadedPose()
+  local preDropOffSequence, postDropOffSequence = getCurrentPlaceSequence()
+
+  print("preDropOff")
+  for i, waypoint in ipairs(preDropOffSequence) do
+    loadPatternPose(waypoint[1], true)
+  end
+
+  print("postDropOff")
+  for i, waypoint in ipairs(postDropOffSequence) do
+    loadPatternPose(waypoint[1], true)
+  end
+end
+
+function checkSheet(file)
+  print("Entering checkSheet")
+  local posesToCheck = {}
+  if gSidewaysPickup then
+    posesToCheck = {} --"sheetPickupOver", "sheetPickup", "sheetDropOff", "sheetApproach", "sheetPickupMoveAbove"}
+  end
+
+  local sheet = palletizerCall("getSheet")
+  local testPose, cartPos
+  local retVal = true
+  resetLastLoadedPose()
+  print("Checking sheet " .. tostring(sheet))
+  for i, poseName in pairs(posesToCheck) do
+    testPose, cartPos = loadPatternPose(poseName)
+    if not testPose then
+      file:write("Sheet " .. sheet .. ":\t" .. poseName .. "\t\t")
+      file:write("[")
+      write_pose(cartPos, file)
+      file:write("]")
+      file:write("\n")
+      retVal = false
+    end
+  end
+  return retVal -- If all positions are good, return true
+end
+
+function checkPicksInPattern1(file)
+  local ret = true
+  local pick = palletizerCall("getPick")
+  local numberOfPicks = palletizerCall("getNumberOfPicks")
+  while pick < numberOfPicks do
+    local pickOK = checkPick(file)
+    if not pickOK then
+      ret = false
+    end
+    palletizerCall("dropoffComplete")
+    pick = palletizerCall("getPick")
+  end
+  return ret
+end
+
+function checkLayer(file)
+  print("Entering checkLayer")
+  local ret = true
+  local pick = palletizerCall("getPick")
+  local picksInLayer = palletizerCall("getPicksInCurrentLayer")
+  local maxPick = pick + picksInLayer
+  while pick < maxPick do
+    local pickOK = checkPick(file)
+    if not pickOK then
+      ret = false
+    end
+    palletizerCall("dropoffComplete")
+    pick = palletizerCall("getPick")
+  end
+
+  -- if layer has sheet
+  -- check sheet position
+  local sheet = getSheetOnCurrentLayer()
+  if sheet then
+    local sheetOK = checkSheet(file)
+    if not sheetOK then
+      ret = false
+    end
+    palletizerCall("sheetPlaced")
+  end
+
+  return ret
+end
+
+function checkAllLayers(file)
+  print("Entering checkAllLayers")
+  local ret = true
+  local layer = palletizerCall("getCurrentLayer")
+  local numberOfLayers = palletizerCall("getNumberOfLayers")
+  while layer < numberOfLayers do
+    print(" LiftUp setting: " .. tostring(palletizerCall("getLiftUp")))
+    local layerOK = checkLayer(file)
+    print("layer " .. tostring(layer) .. " checked in checkAllLayers. layerOK: " .. tostring(layerOK) .. " LiftUp setting: " .. tostring(palletizerCall("getLiftUp")))
+    if not layerOK then
+      local liftEnabled = palletizerCall("getLiftEnabled")
+      local liftUp = palletizerCall("getLiftUp")
+      if liftEnabled and not liftUp then
+        -- reset layer
+        palletizerCall("resetLayer")
+        -- Set that lift should be up for this layer
+        palletizerCall("setLiftUp|true")
+        -- save layer, where the lift should move up
+        local pallet = palletizerCall("getActivePallet")
+        liftUpLayer[pallet] = layer
+        -- retry layer and the rest of pallet
+      else
+        popup_message(0, "Error in current pattern - Position(s) in layer " .. tostring(layer) .. "is not reachable", false)
+        ret = false
+      end
+    end
+    if layer == numberOfLayers - 1 then
+      break
+    end
+    layer = palletizerCall("getCurrentLayer")
+  end
+
+  return ret
+end
+
+
+
+function checkPallet(file)
+  local ret = true
+
+  -- dont check if pattern has no picks (isnt set or isnt valid)
+  local numberOfPicks = palletizerCall("getNumberOfPicks")
+  if numberOfPicks <= 0 then
+    return ret
+  end
+
+  local ifLiftUpSetting = palletizerCall("getLiftUp") --Remember current settings so they can be restored after check
+  local pick = palletizerCall("getPick")
+  local sheet = palletizerCall("getSheet")
+  local pallet = palletizerCall("getActivePallet")
+
+  palletizerCall("setLiftUp|false")  -- Reset settings to beginning before going through all points.
+  resetPallet(pallet)
+
+  file:write("\n")
+  file:write("PALLET " .. pallet .. "\n")
+  file:write("--------------------------------------------------\n")
+
+  local patternVersion = palletizerCall("getPatternVersion") -- There is an old patternVersion. Apparently. I have no idea what this signifies. 
+  print("patternVersion: " .. patternVersion)
+  if patternVersion == "1.0" then
+    ret = checkPicksInPattern1(file)
+  else
+    local hasSheet = palletizerCall("getSheetOnPallet")    -- if pallet has sheet check sheet position
+    if hasSheet then
+      local sheetOK = checkSheet(file)
+      if not sheetOK then
+        ret = false
+      end
+      palletizerCall("sheetPlaced")
+    end
+    print("Pre checkProductPickup LiftUp setting: " .. tostring(palletizerCall("getLiftUp")))
+    ret = checkProductPickup(file) and ret
+    ret = checkAllLayers(file) and ret
+  end
+
+  palletizerCall("setPick|" .. pick)
+  palletizerCall("setSheet|" .. sheet)
+  palletizerCall("setLiftUp|" .. tostring(ifLiftUpSetting))
+  palletizerCall("setInfoText|Pallet ready.")
+
+  return ret
+end
+
+function checkAllPicks()
+  palletizerCall("setInfoText|Checking all poses.")
+  print("Entering checkAllPicks")
+
+  local ret = true
+  -- open and clear debug file
+  local file = io.open("/root/nordbo_palletizing/checkAllPicks.debug", "w")
+
+  local activePallet = palletizerCall("getActivePallet")
+  local copyOfLastLoadedPose = gLastLoadedPose -- remember loadedPose
+
+  for pallet = 1, 2 do
+    print("Checking poses on pallet" .. tostring(pallet))
+    palletizerCall("setActivePallet|" .. tostring(pallet))
+    local palletOK = checkPallet(file)
+    if not palletOK then
+      ret = false
+    end
+  end
+
+  palletizerCall("setActivePallet|" .. activePallet)
+
+  file:close()
+
+  if not ret then
+    popup_message(0, "Error in current pattern - not all positions can be reached.", false)
+  end
+
+  gLastLoadedPose = copyOfLastLoadedPose
+  return ret
+end
+
+function checkActivePallet()
+  palletizerCall("setInfoText|Checking all poses.")
+
+  local ret = true
+
+  -- open and clear debug file
+  local file = io.open("/root/nordbo_palletizing/checkAllPicks.debug", "w")
+
+  -- check active pallet
+  local palletOK = checkPallet(file)
+  if not palletOK then
+    ret = false
+  end
+
+  file:close()
+
+  -- if all positions cant be reached
+  if not ret then
+    popup_message(0, "Error in current pattern - not all positions can be reached.", false)
+  end
+
+  return ret
+end
+
+function place()
+  setSpeed()
+  if isSheet() then
+    placeSheet()
+  else
+    placeProduct()
+  end
+end
+
+
+function placeProduct()
+  print("Placing product")
+  palletizerCall("setInfoText|Placing product.")
+  checkPalletPresence()
+
+  local prePlaceSequence, postPlaceSequence = getCurrentPlaceSequence()
+  moveSequence(prePlaceSequence)
+  local lost = checkVacuum() -- Check if product is still held
+  toolRelease() -- release product 
+  moveSequence(postPlaceSequence)
+
+  if lost then
+    moveToIdle()
+    popup_message(0, "Product lost.\n\nPlease remove the lost product, then click \"Continue\"", false)
+  else
+    palletizerCall("dropoffComplete")
+  end
+
+  updatePalletFull()
+end
+
+function placeSheetSideways()
+  local activePallet = palletizerCall("getActivePallet")
+  local moveOutPose = loadPatternPose("sheetDropOff" .. tostring(activePallet) .. "MoveAbove", true)
+  local approachPose = loadPatternPose("sheetApproach" .. tostring(activePallet), true)
+  local dropOffPose = loadPatternPose("sheetDropOff" .. tostring(activePallet), true)
+  setSheetPickupSpeed()
+  move_joint(moveOutPose, true)
+  move_joint(approachPose, true)
+  move_joint(dropOffPose, true)
+
+  move_joint(approachPose, true)
+  move_joint(moveOutPose, true)
+  return lost
+end
+
+
+
+
+function getCurrentSheetPlaceSequence()
+  local patternName = palletizerCall("getPatternName")
+  local activePallet = palletizerCall("getActivePallet")
+  local currentLayer = getCurrentLayerModified()
+
+  --print("name " .. patternName)
+  if activePallet == 1 then
+    if (patternName == "Berry_5225") and (currentLayer == 5) then
+        return gPreSheetPlaceSequenceHighPallet1, gPostSheetPlaceSequenceHighPallet1
+    else
+      return gPreSheetPlaceSequencePallet1, gPostSheetPlaceSequencePallet1
+    end
+  elseif activePallet == 2 then
+    if (patternName == "Berry_5225") and (currentLayer == 5) then
+        return gPreSheetPlaceSequenceHighPallet2, gPostSheetPlaceSequenceHighPallet2
+    else
+      return gPreSheetPlaceSequencePallet2, gPostSheetPlaceSequencePallet2
+    end
+  end
+end
+
+function placeSheet()
+  palletizerCall("setInfoText|Placing sheet.")
+  print("Placing sheet")
+  checkPalletPresence()
+  local preSheetPlaceSequence, postSheetPlaceSequence = getCurrentSheetPlaceSequence()
+  setSheetPickupSpeed()
+  moveSequence(preSheetPlaceSequence, false, true)
+  local lost = checkVacuum() -- Check if product is still held
+  toolRelease() -- release product
+  moveSequence(postSheetPlaceSequence, false, true)
+
+  if lost then
+    moveToIdle()
+    popup_message(0, "Product lost.\n\nPlease remove the lost product, then click \"Continue\"", false)
+  else
+    sheetDropOffComplete()
+  end
+  updatePalletFull()
+end
+
+function sheetDropOffComplete()
+  if gSheetSettingsFromInterface then
+    local currentLayer = getCurrentLayerModified()
+    gSheetsAlreadyPlaced[palletizerCall("getActivePallet")][currentLayer + 1] = true
+    if (currentLayer == 0) then
+      palletizerCall("sheetPlaced")
+    end
+  else
+    palletizerCall("sheetPlaced")
+  end
+end
+
+function copyArray(array)
+  local copy = {}
+  for i, v in pairs(array) do
+    copy[i] = v
+  end
+
+  return copy
+end
+
+function moveToIdle(verbose)
+  palletizerCall("setInfoText|Moving to idle.")
+  if gSheetSettingsFromInterface and (not palletizerCall("allSheetsPlaced")) then
+    palletizerCall("sheetPlaced")
+  end
+  local idlePose
+  local liftUp = palletizerCall("getLiftUp")
+  print("liftUp: " .. tostring(liftUp))
+  print("isSheet: " .. tostring(isSheet()))
+  if isSheet() then
+    if liftUp then
+      idlePose = loadPatternPose("idleSheetLiftUp", true)
+    else
+      idlePose = loadPatternPose("idleSheet", true)
+    end
+    gLastLoadedPose = {idlePose, "idleSheet"}
+  else
+    if liftUp then
+      idlePose = loadPatternPose("idleLiftUp", true)
+    else
+      idlePose = loadPatternPose("idle", true)
+    end
+    gLastLoadedPose = {idlePose, "idle"}
+  end
+  printIfVerbose("Printing idle pose: ", verbose)
+  printTableIfVerbose(idlePose, verbose)
+  setSpeed()
+  move_joint(idlePose, true)
+
+  if isPalletFull() then
+    palletizerCall("setInfoText|Pallet full.")
+  else
+    palletizerCall("setInfoText|Pallet ready.")
+  end
+end
+
+function checkPause()
+  local isNewLayer = palletizerCall("isNewLayer")
+  local currentLayer = palletizerCall("getCurrentLayer")
+  local pauseOnLayer = palletizerCall("getPauseOnLayer")
+  local pauseOnCurrentLayer = pauseOnLayer[currentLayer + 1]
+  local activePallet = palletizerCall("getActivePallet")
+  local sheetPlaced = gSheetsAlreadyPlaced[activePallet][currentLayer + 1]
+  local sheetOnCurrentLayer = palletizerCall("getSheetOnLayers")[currentLayer + 1]
+  if (isNewLayer and pauseOnCurrentLayer and ((not sheetOnCurrentLayer) or sheetPlaced)) then
+    print("newLayer: " .. tostring(palletizerCall("isNewLayer")))
+    print("getCurrentLayer: " .. tostring(palletizerCall("getCurrentLayer")))
+    print("getPauseOnLayer: " .. tostring(palletizerCall("getPauseOnLayer")))
+    popup_message(0, "Program paused. To resume operation press continue.", false)
+  end
+end
+
+function pickup()
+  setSpeed()
+  local liftEnabled = palletizerCall("getLiftEnabled")
+  local liftUp = palletizerCall("getLiftUp")
+  local layer = getCurrentLayerModified()
+  local pallet = palletizerCall("getActivePallet")
+  ---[[
+  print("liftEnabled: " .. tostring(liftEnabled))
+  print("liftUp: " .. tostring(liftUp))
+  print("layer: " .. tostring(layer))
+  print("pallet: " .. tostring(pallet))
+  print("printing liftUpLayer")
+  printTable(liftUpLayer)
+  --]]
+
+  checkPause()
+  if liftEnabled and liftUpLayer[pallet] then
+    if layer < liftUpLayer[pallet] then
+      moveLiftDown()
+    elseif layer >= liftUpLayer[pallet] then
+      moveLiftUp()
+    end
+  end
+
+  updateDynamicOffsetValues()
+  --Indsæt noget med getSheetOnLayers og getPauseOnLayer
+  print("isSheet: " .. tostring(isSheet()))
+  if isSheet() then
+    pickupSheet()
+  else
+    pickupProduct()
+  end
+end
+
+
+function pickupProduct()
+  print("Entering pickupProduct")
+  local prePickupSequence, postPickupSequence = getCurrentPickupSequence()
+  moveSequence(prePickupSequence)
+  toolGrab()
+  sheetSeek("berrySeekFrontTool")
+  moveSequence(postPickupSequence)
+  -- handling of packet loss for suction cup tool
+  local toolType = palletizerCall("getToolType")
+  if toolType == 0 then
+    local lost = checkVacuum()
+    if lost then
+      toolRelease()
+      moveToIdle()
+      popup_message(0, "Product lost.\n\nPlease remove the lost product, then click \"Continue\"", false)
+      pickupProduct()
+    end
+  end
+end
+
+function getCurrentLayerModified()
+  local currentLayer = palletizerCall("getCurrentLayer") -- returnerer 0 når pallen er fuld. 
+  if palletizerCall("allProductsPlaced") then
+    currentLayer = palletizerCall("getNumberOfLayers")
+  end
+  return currentLayer
+end
+
+function isSheet()
+  --print("entering isSheet")
+  if gSheetSettingsFromInterface then
+    if not palletizerCall("isNewLayer") then
+      --print("Not a new layer in isSheet")
+      return false
+    end
+    local currentLayer = getCurrentLayerModified()
+    local sheetsToPlace = palletizerCall("getSheetOnLayers")
+    local currentPallet = palletizerCall("getActivePallet")
+
+    return ((not gSheetsAlreadyPlaced[currentPallet][currentLayer + 1]) and sheetsToPlace[currentLayer + 1]) -- remember to update gSheetsAlreadyPlaced after sheetPlacement.
+  else
+    return palletizerCall("isSheet")
+  end
+end
+
+function printAllMyGets()
+print("getAccProductsLayer " .. tostring(palletizerCall("getAccProductsLayer")))
+print("getAccProducts " .. tostring(palletizerCall("getAccProducts")))
+print("getProductsInCurrentLayer " .. tostring(palletizerCall("getProductsInCurrentLayer")))
+print("getPicksInCurrentLayer " .. tostring(palletizerCall("getPicksInCurrentLayer")))
+print("getCurrentLayer " .. tostring(palletizerCall("getCurrentLayer")))
+print("isNewLayer " .. tostring(palletizerCall("isNewLayer")))
+end
+
+function setSheetPickupSpeed()
+    init_global_move_profile()
+    set_relative_offset({0, 0, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(0)}))
+    local acc = 1
+    --[[
+    matematik for specialtLavet sheetOpsamlingsHastighed
+    Velocity at distance r is equal to circular velocity times r. ie v = w*r
+    since we get to set w directly the math is hilariously easy. 
+    v/r = w
+    we calculate contribution from shoulder and elbow in one direction:
+    v1 = w*r1 + w*r2  -> v1 = w*(r1+r2)
+    and base in the other direction
+    v2 = w*r3
+    Unified direction via pythagoras: 
+    vTotal = sqrt(v1^2 + v2^2) -> vAbs = sqrt((w*(r1 + r2))^2 + (w*r3)^2)
+    hvilket ifølge wolframAlpha bliver -> 
+    vTotal = w * sqrt(2 r1^2 + 2 r1 r2 + r2^2)
+
+    værktøjs længde = 0.36, total robot længde 1.35, længde fra albue 0.65. Maximal tilladt spidshastighed 0.25
+    0.25 / (sqrt(2*(1.35+0.36)^2 + 2*(1.35+0.36)* (0.65+0.36) + (0.65+0.36)^2) = 0.078
+    Jeg har ikke regnet håndleddet med og robotten er heller ikke helt strakt ud. Mon ikke det går lige op :P 
+    ]]
+    local speed = 0.077
+    set_joint_maxacc{acc, acc, acc, acc, acc, acc}
+    set_joint_maxvelc{speed, speed, speed, speed, speed, speed}
+    endAcc = 0.5
+    --[[
+      Her er mindre matematik for vi kan sætte hastigheden direkte. den bliver jo så sat ift flangen. Hvilket vi lige tager højde for. 
+      jeg har ikke lige en god udregning for det så vi slasher bare lige sluthastigheden med 0.03. Det er kun hvis værktøjet roteres det har en indflydelse. 
+    ]]
+    endVelc = 0.22
+    set_end_maxacc(endAcc)
+    set_end_maxvelc(endVelc)
+end
+
+--[[
+function getCurrentSheetPickupSequence()
+  local patternName = palletizerCall("getPatternName")
+  local activePallet = palletizerCall("getActivePallet")
+  local currentLayer = getCurrentLayerModified()
+
+  if activePallet == 1 then
+    gSheetPickupSequence
+
+end
+]]
+function pickupSheet()
+  print("Picking up sheet.")
+  palletizerCall("setInfoText|Picking up sheet.")
+
+  local activePallet = palletizerCall("getActivePallet")
+  local pickupJoints, overPickupPose, moveAbovePose
+  pickupJoints = loadPatternPose("sheetPickup" .. tostring(activePallet), true)
+  overPickupPose = loadPatternPose("sheetPickup" .. tostring(activePallet) .."Over", true)
+
+  setSheetPickupSpeed()
+  move_joint(overPickupPose, true)
+  waitForSheet()
+  move_line(pickupJoints, true)
+  toolGrab()
+  if vacuumSwitchEnabled() then
+    sheetSeek()
+  end
+  move_line(overPickupPose, true)
+
+  -- handling of packet loss for suction cup tool
+  local toolType = palletizerCall("getToolType")
+  if toolType == 0 then
+    local lost = checkVacuum()
+    if lost then
+      toolRelease()
+      moveToIdle()
+      popup_message(0, "Sheet lost.\n\nPlease remove the lost sheet, then click \"Continue\"", false)
+      pickupSheet()
+    end
+  end
+end
+
+function sheetSeek(tool)
+
+  -- if given a toolkey will search along positive z-axis of that tool
+  -- if no tool is given will offset negatively along the baseCoordinateSystem, assuming the sheetHolders and robotFrames have the same Z direction.
+  local sheetHeight = palletizerCall("getSheetHeight")
+  local i = 1
+  local toolPos, toolOri
+  if tool then
+    toolPos = gTools[tool]["kin"][1]
+    toolOri = gTools[tool]["kin"][2]
+  end
+  local pose = getCurrentJoints()
+  while checkVacuum() do
+    if tool then
+      set_relative_offset({0, 0, i * sheetHeight / 2}, rpy2quaternion({d2r(0), d2r(0), d2r(0)}), toolPos, toolOri)
+    else
+      set_relative_offset({0, 0, -i * sheetHeight / 2}, rpy2quaternion({d2r(0), d2r(0), d2r(0)}))
+    end
+    move_joint(pose, true)
+    i = i + 1
+    sleep(0.1)
+  end
+end
+
+function vacuumSwitchEnabled()
+  local toolType = palletizerCall("getToolType")
+  if toolType == 0 then
+    if _toolIOEnabled == false or (_toolIOEnabled == true and _productSensor ~= -1) then
+      return true
+    end
+  end
+  return false
+end
+
+function checkVacuum()
+  local toolType = palletizerCall("getToolType")
+  if (toolType == 1) or isSimulation() or gVacuumCheckDisabled then
+    return false
+  end
+  local checkVacuumList
+  if isSheet() then
+    checkVacuumList = checkVacuumTable["sheetPick"]
+  --elseif palletizerCall("isDoublePick") then  -- For some reason my berry project thinks it is a doublePick?? Weird
+  --  checkVacuumList = checkVacuumTable["doublePick"]
+  else
+    checkVacuumList = checkVacuumTable["singlePick"]
+  end
+  local returnValue = false
+  for i, element in pairs(checkVacuumList) do --check all defined vacuumSignals
+    returnValue = checkVacuumElement(element) or returnValue
+  end
+  --print("checkVacuum says: " .. tostring(returnValue))
+  return returnValue
+end
+
+function checkVacuumElement(elementName)
+  if _toolIOEnabled == true then
+    if _productSensor == -1 then
+      return false
+    elseif get_robot_io_status(RobotIOType.RobotToolDI, _toolIO[_productSensor]) == 0 then
+      return true
+    end
+  elseif _toolIOEnabled == false then
+    --print("IO for checkVacuum: " .. tostring(elementName))
+    if (getIO(elementName) == 0) then
+      return true
+    end
+  end
+  return false
+end
+
+function IOTypeMatch(IO)
+  if (IO == nil) then
+    popup_message(0, "IOName undefined in getIO", false)
+  end
+  local str = IO:sub(1, 5)
+  local IOType
+  if str:sub(1, 5) == "U_DI_" then
+    IOType = RobotIOType.RobotBoardUserDI
+  elseif str:sub(1, 5) == "U_DO_" then
+    IOType = RobotIOType.RobotBoardUserDO
+  else
+    popup_message(0, "unable to determineIO type in getIO", false)
+  end
+  return IOType
+end
+
+function setIO(name, value)
+  local IO = IOTable[name]
+  local IOType = IOTypeMatch(IO)
+  set_robot_io_status (IOType, IO, value)
+end
+
+function getIO(name)
+  local IO = IOTable[name]
+  local IOType = IOTypeMatch(IO)
+  return get_robot_io_status(IOType, IO)
+end
+
+
+
+function setSpeed()
+  init_global_move_profile()
+  set_relative_offset({0, 0, 0}, rpy2quaternion({d2r(0), d2r(0), d2r(0)}))
+  local speed = palletizerCall("getSpeed")
+  local acc = speed + 1
+  speed = speed*2 + 2
+  set_joint_maxacc{acc, acc, acc, acc, acc, acc}
+  set_joint_maxvelc{speed, speed, speed, speed, speed, speed}
+
+  endAcc = 0.5 + 0.5 * speed
+  endVelc = 0.5 + 0.5 * speed
+  set_end_maxacc(endAcc)
+  set_end_maxvelc(endVelc)
+end
+
+function swapPallet()
+  local active_pallet = palletizerCall("getActivePallet")
+  local palle1_rdy = palletizerCall("getPallet1Ready")
+  local palle2_rdy = palletizerCall("getPallet2Ready")
+  if (active_pallet == 1) then
+    if (not palle2_rdy) then
+      local liftEnabled = palletizerCall("getLiftEnabled")
+      local liftUp = palletizerCall("getLiftUp")
+      if liftEnabled and liftUp then
+        moveLiftDown()
+      end
+      palle2_rdy = palletizerCall("getPallet2Ready")
+      if (not palle2_rdy) then
+        popup_message(0, "Please check that pallet 2 is empty or replace it with an empty pallet and press continue", false)
+        palletizerCall("setPallet2Ready|true")
+      end
+    end
+    palletizerCall("setActivePallet|2")
+    palletizerCall("setPallet1Ready|false")
+  elseif (active_pallet == 2) then
+    if (not palle1_rdy) then
+      local liftEnabled = palletizerCall("getLiftEnabled")
+      local liftUp = palletizerCall("getLiftUp")
+      if liftEnabled and liftUp then
+        moveLiftDown()
+      end
+      palle1_rdy = palletizerCall("getPallet2Ready")
+      if (not palle1_rdy) then
+        popup_message(0, "Please check that pallet 1 is empty or replace it with an empty pallet and press continue", false)
+        palletizerCall("setPallet1Ready|true")
+      end
+    end
+    palletizerCall("setActivePallet|1")
+    palletizerCall("setPallet2Ready|false")
+  end
+  resetPallet()
+  checkProductNumber()
+end
+
+function isSimulation()
+  if palletizerCall("getMode") == 1 then
+    return true
+  else
+    return false
+  end
+end
+
+
+function checkPalletPresence()
+  if (isSimulation() or gCheckPalletPresenceDisabled) then
+    return
+  end
+
+  local pallet = palletizerCall("getActivePallet")
+  if (pallet == 1 and getIO("pallet1") ~= 0)
+    or (pallet == 2 and getIO("pallet2") ~= 0) then
+    popup_message(0, "Pallet" .. pallet .. " not detected. Please check that pallet " .. pallet .. " is placed correctly,\nthen press continue.", false)
+    checkPalletPresence()
+  end
+end
+
+function checkPositions()
+  local positions_set = palletizerCall("positionsSet")
+  if (positions_set == false) then
+    popup_message(0, "Please set applicable positions in \"Positions\" tab, for the current pattern, before starting.", true)
+  end
+end
+
+function flipPose(pose)
+  if r2d(pose[6]) > -5 and r2d(pose[6]) < 5 then
+    -- TODO: write error/debug message
+    return pose
+  elseif r2d(pose[6]) < -5 then
+    pose[6] = pose[6] + d2r(180)
+  elseif r2d(pose[6]) > 5 then
+    pose[6] = pose[6] - d2r(180)
+  end
+
+  return pose
+end
+
+function chooseLine()
+  local palle1_rdy = palletizerCall("getPallet1Ready")
+  local palle2_rdy = palletizerCall("getPallet2Ready")
+
+  if not palle1_rdy then
+    palletizerCall("setInfoText1|Waiting for new pallet.")
+  end
+  if not palle2_rdy then
+    palletizerCall("setInfoText2|Waiting for new pallet.")
+  end
+
+  -- TODO: if both pallets are full, pause and alert the operator
+  if not palle1_rdy and not palle2_rdy then
+    sleep(1)
+    chooseLine()
+    return
+  end
+
+  setProductInfotext()
+  sleep(0.1)
+  while palletizerCall("getLine") == 0 do
+    sleep(0.1)
+  end
+
+  local line = palletizerCall("getLine")
+  palletizerCall("setActivePallet|" .. line)
+
+  if isPalletFull() then
+    updatePalletFull()
+    chooseLine()
+    return
+  end
+
+  checkDoublePick(line)
+end
+
+function isTopSheetPlaced()
+  if not gSheetSettingsFromInterface then
+    return allSheetsPlaced()
+  end
+  local nrOfLayers = palletizerCall("getNumberOfLayers")
+  local activePallet = palletizerCall("getActivePallet")
+  local sheetOnLayer = palletizerCall("getSheetOnLayers") -- 1-indexed, with 1 being 'on pallet'
+  if not sheetOnLayer[nrOfLayers + 1] then
+    return true
+  end
+  return gSheetsAlreadyPlaced[activePallet][nrOfLayers + 1]
+end
+
+function isPalletFull()
+  local allProductsPlaced = palletizerCall("allProductsPlaced")
+  if allProductsPlaced and isTopSheetPlaced() then
+    print("Pallet is full")
+    return true
+  else
+    return false
+  end
+end
+
+function isPalletFull2()
+  local allProductsPlaced = palletizerCall("allProductsPlaced")
+  local sheetsPlaced = palletizerCall("allSheetsPlaced")
+  if allProductsPlaced and sheetsPlaced then
+    return true
+  else
+    return false
+  end
+end
+
+
+function updatePalletFull()
+  if isPalletFull() then
+    local activePallet = palletizerCall("getActivePallet")
+    if activePallet == 1 then
+      palletizerCall("setPallet1Ready|false")
+    elseif activePallet == 2 then
+      palletizerCall("setPallet2Ready|false")
+    end
+  end
+end
+
+function updatePalletReady()
+  local iniPallet = palletizerCall("getActivePallet")
+
+  palletizerCall("setActivePallet|1")
+  if isPalletFull2() then
+    print("Pallet1 is full")
+    palletizerCall("setPallet1Ready|false")
+  else
+    palletizerCall("setPallet1Ready|true")
+  end
+
+  palletizerCall("setActivePallet|2")
+  if isPalletFull2() then
+    print("Pallet2 is full")
+    palletizerCall("setPallet2Ready|false")
+  else
+    palletizerCall("setPallet2Ready|true")
+  end
+
+  palletizerCall("setActivePallet|" .. iniPallet)
+end
+
+function confirmPalletStatus()
+  -- get pick on both pallets
+  local iniPallet = palletizerCall("getActivePallet")
+  palletizerCall("setActivePallet|1")
+  local pick1 = palletizerCall("getPick")
+  palletizerCall("setActivePallet|2")
+  local pick2 = palletizerCall("getPick")
+  palletizerCall("setActivePallet|" .. iniPallet)
+
+  local message = "Please confirm that:\nBoth pallets contains the correct number of products,\nthen press continue."
+  popup_message(0, message, false)
+end
+
+function waitForProduct(doublePick)
+  -- disable IO if mode == simulator == 1
+  if (isSimulation or gProductSensorDisabled) then
+    return
+  end
+  -- isDual is true if there is a different pattern on each pallet.  
+  if not palletizerCall("isDual") or palletizerCall("getActivePallet") == 1 then
+    waitForProduct1(doublePick)
+  else
+    waitForProduct2(doublePick)
+  end
+end
+
+function waitForProduct1(doublePick)
+  -- wait till product is placed, then move down, gripping the product
+  while (getIO("product1") == 1) do
+    sleep(0.2)
+  end
+  -- if doublepick, also wait for product 2: 
+  if (doublePick == true) then
+    while (getIO("doublePick1") == 1 or getIO("product1") == 1) do
+      sleep(0.2)
+    end
+  end
+end
+
+function waitForProduct2(doublePick)
+  -- wait till product is placed, then move down, gripping the product
+  while (getIO("product2") == 1) do
+    sleep(0.2)
+  end
+  -- if doublepick, also wait for product 2: 
+  if (doublePick == true) then
+    while (getIO("doublePick2") == 1 or getIO("product2") == 1) do
+      sleep(0.2)
+    end
+  end
+end
+
+function waitForSheet()
+  -- disable IO if mode == simulator == 1
+  if palletizerCall("getMode") == 1 then
+    return
+  end
+
+  -- choose which IO for pallet 1 or 2
+  local io
+  local isDual = palletizerCall("isDual")
+  local pallet = palletizerCall("getActivePallet")
+  if isDual and pallet == 2 then
+    io = "U_DI_12"
+  else
+    io = "U_DI_11"
+  end
+
+  -- wait till sheets are available
+  while (get_robot_io_status(RobotIOType.RobotBoardUserDI, io) == 1) do
+    sleep(0.2)
+  end
+end
+
+function getIdleX()
+  -- get ini waypoint to calculate idle from
+  local iniWaypoint = get_current_waypoint()
+  idle_x = iniWaypoint.pos.x -- GLOBAL!
+end
+
+function toolGrab()
+  -- disable IO if mode == simulator == 1
+  if palletizerCall("getMode") == 1 then
+    return
+  end
+
+  -- grab object          
+  local toolType = palletizerCall("getToolType")
+  -- too low toolONTime breaks toolIO, cause the IO is updating slow
+  local toolONTime = palletizerCall("getToolONTime")
+
+  if _toolIOEnabled == false then
+    -- suction cup
+    if (toolType == 0) then
+      if (isSheet() and gSidewaysPickup) then
+        setIO("vacuum2", 1)
+      else
+        setIO("vacuum1", 1)
+      end
+      sleep(toolONTime)
+    -- open/close tool
+    elseif (toolType == 1) then
+      setIO("fingersOpen", 0)
+      setIO("fingersClose", 1)
+      sleep(toolONTime)
+    end
+  else
+    -- suction cup
+    if (toolType == 0) then
+      if _toolON ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolON], _toolIOActivate[_toolON])
+        sleep(toolONTime)
+      end
+      if _toolON2 ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolON2], _toolIOActivate[_toolON2])
+        sleep(toolONTime)
+      end
+    -- open/close tool
+    elseif (toolType == 1) then
+      -- setting opening valve false
+      if _toolOFF ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolOFF], _toolIODeactivate[_toolOFF])
+        sleep(toolONTime)
+      end
+      if _toolOFF2 ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolOFF2], _toolIODeactivate[_toolOFF2])
+        sleep(toolONTime)
+      end
+      -- setting closing valve true
+      if _toolON ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolON], _toolIOActivate[_toolON])
+        sleep(toolONTime)
+      end
+      if _toolON2 ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolON2], _toolIOActivate[_toolON2])
+        sleep(toolONTime)
+      end
+    end
+  end
+end
+
+function toolRelease()
+  -- disable IO if mode == simulator == 1
+  if palletizerCall("getMode") == 1 then
+    return
+  end
+
+  local toolType = palletizerCall("getToolType")
+  -- too low toolOFFTime breaks toolIO, cause the IO is updating slow
+  local toolOFFTime = palletizerCall("getToolOFFTime")
+
+  if toolType == 0 then
+    if _toolIOEnabled == true then
+      if _toolON ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolON], _toolIODeactivate[_toolON])
+        -- slow toolIO sleep
+        sleep(toolOFFTime)
+      end
+      if _toolON2 ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolON2], _toolIODeactivate[_toolON2])
+        -- slow toolIO sleep
+        sleep(toolOFFTime)
+      end
+      if _toolOFF ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolOFF], _toolIOActivate[_toolOFF])
+        -- slow toolIO sleep
+        sleep(toolOFFTime)
+      end
+      if _toolOFF2 ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolOFF2], _toolIOActivate[_toolOFF2])
+        -- slow toolIO sleep
+        sleep(toolOFFTime)
+      end
+    elseif _toolIOEnabled == false then
+      if (isSheet() and gSidewaysPickup) then
+        setIO("vacuum2", 0)
+        setIO("blow2", 1)
+      else
+        setIO("vacuum1", 0)
+        setIO("blow1", 1)
+      end
+    end
+    -- only check vacuum if vacuum switch is used
+    if (_toolIOEnabled == false or (_toolIOEnabled == true and _productSensor ~= -1)) and not gVacuumCheckDisabled then
+      while (checkVacuum() == false) do
+        sleep(toolOFFTime)
+      end
+      sleep(toolOFFTime)
+    -- else sleep for an arbitrary amount of time before assuming product is placed
+    else
+      sleep(toolOFFTime)
+    end
+    stopBlow()
+  elseif toolType == 1 then
+    if _toolIOEnabled == true then
+      -- setting closing valve false
+      if _toolON ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolON], _toolIODeactivate[_toolON])
+        sleep(toolOFFTime)
+      end
+      if _toolON2 ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolON2], _toolIODeactivate[_toolON2])
+        sleep(toolOFFTime)
+      end
+      -- setting opening valve true
+      if _toolOFF ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolOFF], _toolIOActivate[_toolOFF])
+        sleep(toolOFFTime)
+      end
+      if _toolOFF2 ~= -1 then
+        set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolOFF2], _toolIOActivate[_toolOFF2])
+        sleep(toolOFFTime)
+      end
+    elseif _toolIOEnabled == false then
+      setIO("fingersClose", 0)
+      setIO("fingersOpen", 1)
+      sleep(toolOFFTime)
+    end
+  end
+end
+
+function stopBlow()
+  if isSimulation() then
+    return
+  end
+
+  if _toolIOEnabled == false then
+    setIO("blow1", 0)
+    setIO("blow2", 0)
+  else
+    if _toolOFF ~= -1 then
+      set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolOFF], _toolIODeactivate[_toolOFF])
+      sleep(0.1)
+    end
+    if _toolOFF2 ~= -1 then
+      set_robot_io_status (RobotIOType.RobotToolDO, _toolIO[_toolOFF2], _toolIODeactivate[_toolOFF2])
+      sleep(0.1)
+    end
+  end
+end
+
+function setProductInfotext()
+  -- disable IO if mode == simulator == 1
+  if palletizerCall("getMode") == 1 then
+    return
+  end
+
+  local line = palletizerCall("getLine")
+  if line ~= 1 and palle1_rdy and get_robot_io_status(RobotIOType.RobotBoardUserDI, "U_DI_03") == 1 then
+    palletizerCall("setInfoText1|Waiting for product.")
+  end
+  if line ~= 2 and palle2_rdy and get_robot_io_status(RobotIOType.RobotBoardUserDI, "U_DI_05") == 1 then
+    palletizerCall("setInfoText2|Waiting for product.")
+  end
+end
+
+function checkDoublePick(line)
+  -- disable IO if mode == simulator == 1
+  if palletizerCall("getMode") == 1 then
+    return
+  end
+
+  local doublePick = palletizerCall("getIsDoublePick")
+  if doublePick == true then
+    if line == 1 then
+      if get_robot_io_status(RobotIOType.RobotBoardUserDI, "U_DI_04") == 1 then
+        palletizerCall("setLine|0")
+        palletizerCall("setInfoText1|Waiting for product.")
+        chooseLine()
+        return
+      end
+    elseif line == 2 then
+      if get_robot_io_status(RobotIOType.RobotBoardUserDI, "U_DI_06") == 1 then
+        palletizerCall("setLine|0")
+        palletizerCall("setInfoText2|Waiting for product.")
+        chooseLine()
+        return
+      end
+    end
+  end
+end
+
+function getToolIO()
+  _toolIOEnabled = palletizerCall("getToolIOEnabled")
+
+  if _toolIOEnabled == false then
+    return
+  end
+
+  _toolIO = {}
+  _toolIO[0] = "T_DI/O_00"
+  _toolIO[1] = "T_DI/O_01"
+  _toolIO[2] = "T_DI/O_02"
+  _toolIO[3] = "T_DI/O_03"
+
+  _toolON = palletizerCall("getToolON")
+  _toolON2 = palletizerCall("getToolON2")
+  _toolOFF = palletizerCall("getToolOFF")
+  _toolOFF2 = palletizerCall("getToolOFF2")
+  _productSensor = palletizerCall("getProductSensor")
+
+  _toolIOActivate = {}
+  _toolIOActivate[0] = palletizerCall("getToolIO0Active")
+  _toolIOActivate[1] = palletizerCall("getToolIO1Active")
+  _toolIOActivate[2] = palletizerCall("getToolIO2Active")
+  _toolIOActivate[3] = palletizerCall("getToolIO3Active")
+
+  _toolIODeactivate = {}
+  _toolIODeactivate[0] = math.abs(_toolIOActivate[0] - 1)
+  _toolIODeactivate[1] = math.abs(_toolIOActivate[1] - 1)
+  _toolIODeactivate[2] = math.abs(_toolIOActivate[2] - 1)
+  _toolIODeactivate[3] = math.abs(_toolIOActivate[3] - 1)
+end
+
+function checkPalletFull()
+  if isPalletFull() then
+    swapPallet()
+  end
+end
+
+function moveLiftUp()
+  print("entering moveLiftUp")
+  local liftEnabled = palletizerCall("getLiftEnabled")
+  if not liftEnabled then
+    return
+  end
+
+  palletizerCall("setInfoText|Moving lift Up.")
+
+  local success = palletizerCall("moveLiftUp")
+
+  palletizerCall("setInfoText|")
+
+  if not success then
+    popup_message(2, "Moving lift up failed!", true)
+  end
+end
+
+function moveLiftDown()
+  print("Entering moveLiftDown")
+  local liftEnabled = palletizerCall("getLiftEnabled")
+  if not liftEnabled then
+    return
+  end
+  palletizerCall("setInfoText|Moving lift Down.")
+
+  local success = palletizerCall("moveLiftDown")
+
+  palletizerCall("setInfoText|")
+
+  if not success then
+    popup_message(2, "Moving lift down failed!", true)
+  end
+end
+
+-- for use in the single pallet example
+function reset()
+  local pallet = palletizerCall("getActivePallet")
+  resetPallet(pallet)
+
+  local liftEnabled = palletizerCall("getLiftEnabled")
+  local liftUp = palletizerCall("getLiftUp")
+  if liftEnabled and liftUp then
+    moveLiftDown()
+  end
+end
+
+function checkProductNumber()
+  return palletizerCall("checkProductNumber")
+end
+
+
+
+
+liftUpLayer = {}
+
+updatePalletReady()
+getIdleX()
+getToolIO()
+-- End of program! 
