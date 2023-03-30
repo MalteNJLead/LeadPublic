@@ -482,7 +482,7 @@ end
 
 function checkIfAtIdle()
     -- Since the program does not know where the robot is when it starts a check should be made to put the robot in the Nodesystem. 
-    local idlePose = gNodes["idle"][1]
+    local idlePose = gNodes["idle"]["pose"]
     return checkPose(idlePose)
 
 end
@@ -513,14 +513,23 @@ function setOffset(offsetName)
 end
 
 function checkConnectionValid(connection)
-    -- checks if a node reference exist and has a valid tool reference. 
+    -- checks if a node reference exist and has valid reference. 
 	if (gNodes[connection["node"]] == nil) then
 		popup_message(0, "Error. Unknown node reference, " .. tostring(connection["node"]) .. ",  in searchTree", false)
 	end
-	for i = 1, #connection["tools"] do
-		if (gTools[connection["tools"][i]] == nil) then
-			popup_message(0, "Error. Unknown tool reference, " .. tostring(connection["tools"][i]) .. ", in searchTree", false)
-		end
+    -- check Tools
+    if not (connection["tools"] == nil) then
+        for i = 1, #connection["tools"] do
+            if (gTools[connection["tools"][i]] == nil) then
+                popup_message(0, "Error. Unknown tool reference, " .. tostring(connection["tools"][i]) .. ", in searchTree", false)
+            end
+        end
+    end
+    if gSpeedSettings[connection["speed"]] == nil then
+		popup_message(0, "Error. Unknown speedSetting, " .. tostring(connection["speed"]) .. ",  in searchTree", false)
+	end
+    if not (connection["type"] == "joint" or connection["type"] == "line") then
+		popup_message(0, "Error. Unknown node reference, " .. tostring(connection["node"]) .. ",  in searchTree", false)
 	end
 end
 
@@ -559,8 +568,8 @@ function searchTree(target)
     return allPaths[1] -- return the path in format {{nodeName1, movetype1, speed1}, {nodeName2, movetype2, speed2}, ...}
 end
 
-function resetPoseLog()
-    -- reset the file where path movement is logged
+function clearPoseLog()
+    -- Clear the file where path movement is logged. Function is called at the bottom of commonlib to avoid a leak. 
     local filePathLog = "/root/AuboRobotWorkSpace/teachpendant/share/teachpendant/script/PositionsLog.aubo"
     fileLog = io.open(filePathLog, 'w')
     fileLog:write("start\n")
@@ -640,7 +649,7 @@ end
 ---------------- section 8 - Matrix Manipulation and rotation -------------------
 
 
-function checkMatrix(mat) -- returns true if matrix is valid.
+function checkMatrix(mat) -- returns true if matrix exists and has coloumns and rows of same length. 
     if next(mat) == nil then
         popup_message(0, "Error. Matrix empty in checkMatrix")
     end
@@ -702,53 +711,6 @@ function matrixMultiply(mat1, mat2)
     return result
 end
 
-function rotatePointAboutAxis(point, axis, angle) -- point in {x,y,z} format, axis is a string: "x", "y" or "z", angle is measured in radians
-    local newPoint
-    if #point == 3 then
-        local coloumnPoint = rowToColoumn(point)
-        local rotationMatrix = {}
-        if axis == "x" then
-            rotationMatrix = {
-                {1,0,0},
-                {0, math.cos(angle), -math.sin(angle)},
-                {0, math.sin(angle), math.cos(angle)}
-            }
-        elseif axis == "y" then
-            rotationMatrix = {
-                {math.cos(angle),0,math.sin(angle)},
-                {0, 1, 0},
-                {-math.sin(angle), 0, math.cos(angle)}
-            }
-        elseif axis == "z" then
-            rotationMatrix = {
-                {math.cos(angle),-math.sin(angle), 0},
-                {math.sin(angle), math.cos(angle), 0},
-                {0, 0, 1}
-            }
-        end
-        newPoint = matrixMultiply(rotationMatrix, coloumnPoint)
-        newPoint = getColoumnOfMatrix(newPoint, 1)
-    else
-        popup_message(0, "Error. Wrong length of point in rotatePointAboutAxis", false)
-    end
-    return newPoint
-end
-
-function posQuat2TransMat(position, quaternion)
-    local w = quaternion[1]
-    local x = quaternion[2]
-    local y = quaternion[3]
-    local z = quaternion[4]
-    local posX = position[1]
-    local posY = position[2]
-    local posZ = position[3]
-    local row1 = {1-2*y^2-2*z^2, 2*x*y-2*z*w, 2*x*z+2*y*w, posX}
-    local row2 = {2*x*y+2*z*w, 1-2*x^2-2*z^2, 2*y*z-2*x*w, posY}
-    local row3 = {2*x*z-2*y*w, 2*y*z+2*x*w, 1-2*x^2-2*y^2, posZ}
-    local row4 = {0,0,0,1}
-    return {row1, row2, row3, row4}
-end
-
 function transMat2PosQuat(transMat)
     local w, x, y, z
     w = sqrt(transMat[1][1] + transMat[2][2] + transMat[3][3] + 1)*0.5
@@ -787,3 +749,5 @@ function multiplyFrames(pos1, rot1, pos2, rot2)
     local resultOri = hamiltonProduct(ori1, ori2)
     return resultPos, resultOri
 end
+
+clearPoseLog()
